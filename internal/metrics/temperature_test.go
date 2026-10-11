@@ -39,3 +39,13 @@ func TestWindowsCPUThermalNullAndProviderZeroAreUnavailable(t *testing.T) {
 		t.Fatal("malformed provider data accepted")
 	}
 }
+
+func TestWindowsIntelThermalMarginIsNotTemperature(t *testing.T) {
+	r, err := parseWindowsCPUThermal([]byte(`{"Sensors":[
+ {"ID":"/intelcpu/0/temperature/0","Name":"CPU Core #1","Type":"Temperature","Value":30},
+ {"ID":"/intelcpu/0/temperature/1","Name":"CPU Core #1 Distance to TjMax","Type":"Temperature","Value":70},
+ {"ID":"/intelcpu/0/temperature/2","Name":"CPU Package","Type":"Temperature","Value":35}]}`))
+	if err != nil || len(r.Sensors) != 2 || r.Hottest() == nil || r.Hottest().Celsius != 35 {
+		t.Fatalf("thermal margin reported as CPU temperature: %+v %v", r, err)
+	}
+}

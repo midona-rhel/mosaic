@@ -18,10 +18,16 @@ controls, voltages or clock values.
 
 ## GPU readings
 
-AMD temperature, hotspot, power, load and VRAM readings use the installed Radeon
-driver's ADL interfaces, matching Libre Hardware Monitor's `AmdGpu` implementation.
-No PawnIO installation is needed for that path. NVIDIA/Intel library readers and
-existing WDDM/DXGI/NVIDIA readers remain available where supported by the driver.
+| Hardware | Reader | Portable readings and limits |
+| --- | --- | --- |
+| AMD GPUs | Radeon ADL | Load, VRAM, temperature/hotspot and power when exposed by the installed driver. |
+| NVIDIA GPUs | NVAPI / NVML | Load, VRAM, temperature and power when exposed by the installed driver. |
+| Intel discrete GPUs | Intel Graphics Control Library (IGCL) | Load, VRAM, temperature and power when exposed by the installed driver. |
+| Intel integrated GPUs | D3D/WDDM, IGCL | Engine load and shared memory; temperature where IGCL exposes it. LHM's integrated-GPU power reader uses privileged MSR access. |
+
+The GPU driver API paths need no additional PawnIO installation. Existing
+WDDM/DXGI/NVIDIA readers remain available as fallbacks. This is source-verified
+backend coverage, not physical testing of every adapter or driver version.
 
 Only unambiguous adapter names are merged. Identical devices are kept separate
 rather than assigning one GPU's temperature to another.
@@ -30,8 +36,10 @@ rather than assigning one GPU's temperature to another.
 
 CPU utilization uses Windows counters and needs no sensor helper or driver.
 
-Ryzen temperature and package power are different: Libre reads the CPU's SMN
-registers and MSR energy counters using kernel access. Its current implementation
+Both **AMD and Intel CPU temperature/package power** need kernel access in
+Libre. Ryzen uses SMN temperature registers and MSR energy counters; Intel uses
+DTS thermal-status MSRs and RAPL energy counters. Intel's distance-to-TjMax
+readings are margins and are excluded from actual temperatures. Its current implementation
 uses PawnIO. Mosaic can use an **already available, accessible** PawnIO driver, or
 fall back to an already-running legacy LHM/OHM WMI sensor provider. It does not
 install either. With no accessible provider, these readings remain unavailable.
@@ -68,14 +76,18 @@ code, sample time and raw named sensors. Error 5 means access was denied. If the
 helper is missing, extract the complete ZIP again.
 
 Native Windows tests cover self-contained startup, repeated samples, absence of
-a CPU driver, collector integration and helper cleanup. Physical 5800X3D and
-Radeon readings still need comparison on that machine. The helper is built for
+a CPU driver, collector integration and helper cleanup. Physical AMD/Intel CPU and AMD/NVIDIA/Intel GPU readings still need comparison
+on actual hardware. The helper is built for
 Windows x64 and ARM64; sensor availability depends on hardware and driver APIs.
 
 ## Sources and packaging
 
 - [Pinned library and integration API](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/tree/v0.9.6)
 - [AMD CPU register/energy reader](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.6/LibreHardwareMonitorLib/Hardware/Cpu/Amd17Cpu.cs)
+- [Intel CPU DTS/RAPL reader](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.6/LibreHardwareMonitorLib/Hardware/Cpu/IntelCpu.cs)
+- [NVIDIA NVAPI/NVML reader](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.6/LibreHardwareMonitorLib/Hardware/Gpu/NvidiaGpu.cs)
+- [Intel discrete GPU IGCL reader](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.6/LibreHardwareMonitorLib/Hardware/Gpu/IntelDiscreteGpu.cs)
+- [Intel integrated GPU reader](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.6/LibreHardwareMonitorLib/Hardware/Gpu/IntelIntegratedGpu.cs)
 - [AMD GPU ADL reader](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.6/LibreHardwareMonitorLib/Hardware/Gpu/AmdGpu.cs)
 - [Legacy WinRing0 loading and cleanup](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.4/LibreHardwareMonitorLib/Hardware/Ring0.cs)
 - [PawnIO administrator/SYSTEM device ACL](https://github.com/namazso/PawnIO/blob/2.1.0/PawnIO/PawnIO.inf.in)

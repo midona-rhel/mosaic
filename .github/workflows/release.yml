@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      VERSION: ${{ inputs.version }}
+      MOSAIC_RELEASE_VERSION: ${{ inputs.version }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
@@ -38,8 +38,8 @@ jobs:
           go test -race ./...
           go vet ./...
       - name: Build and verify archives
-        run: python3 scripts/release.py --version "$VERSION"
+        run: python3 scripts/release.py --version "$MOSAIC_RELEASE_VERSION"
       - name: Upload archives and checksums
         run: |
-          gh release view "$VERSION" >/dev/null
-          gh release upload "$VERSION" dist/*-"$VERSION".zip "dist/SHA256SUMS-$VERSION.txt" --clobber
+          gh release view "$MOSAIC_RELEASE_VERSION" >/dev/null
+          gh release upload "$MOSAIC_RELEASE_VERSION" dist/*-"$MOSAIC_RELEASE_VERSION".zip "dist/SHA256SUMS-$MOSAIC_RELEASE_VERSION.txt" --clobber

@@ -19,6 +19,11 @@ func parseWindowsCPUThermal(data []byte) (CPUThermalReport, error) {
 	}
 	r := CPUThermalReport{Problems: raw.Problems}
 	for _, s := range raw.Sensors {
+		// Intel's DTS margin is a delta to the thermal limit, not a die
+		// temperature. Libre publishes both with SensorType.Temperature.
+		if strings.Contains(strings.ToLower(s.Name), "distance to tjmax") {
+			continue
+		}
 		// These WMI providers publish missing values as zero. Do not display those.
 		if (s.Type != "" && s.Type != "Temperature") || s.Value == nil || *s.Value <= 0 || !validTemperature(*s.Value) || s.ID == "" {
 			continue

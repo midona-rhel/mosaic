@@ -44,3 +44,51 @@ func TestHelperGPUDoesNotGuessBetweenIdenticalAdapters(t *testing.T) {
 		t.Fatal(r)
 	}
 }
+
+// These names and units match the pinned LHM AmdGpu, NvidiaGpu,
+// IntelDiscreteGpu and IntelIntegratedGpu readers. Integrated Intel load
+// remains an OS engine measurement rather than an invented GPU Core value.
+func TestHelperGPUVendorSensorMappings(t *testing.T) {
+	for _, tc := range []struct {
+		name, hardware, power string
+		integrated            bool
+	}{
+		{"AMD Radeon", "GpuAmd", "GPU Package", false},
+		{"NVIDIA GeForce", "GpuNvidia", "GPU Package", false},
+		{"Intel Arc", "GpuIntel", "GPU Package", false},
+		{"Intel integrated", "GpuIntel", "GPU Power", true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var rows []sensors.Sensor
+			add := func(name, kind string, value float64) {
+				rows = append(rows, sensors.Sensor{ID: name, DeviceID: tc.name, Hardware: tc.name, HardwareType: tc.hardware, Name: name, Type: kind, Value: sensorNumber(value)})
+			}
+			add("GPU Core", "Temperature", 62)
+			add(tc.power, "Power", 25)
+			if tc.integrated {
+				add("D3D 3D", "Load", 33)
+				add("D3D Shared Memory Used", "SmallData", 256)
+			} else {
+				add("GPU Core", "Load", 33)
+				add("GPU Memory Used", "SmallData", 256)
+				add("GPU Memory Total", "SmallData", 8192)
+			}
+			r := GPUReport{Devices: []GPU{{ID: "os-adapter", Name: tc.name, Utilization: sensorNumber(17), UtilizationCounter: "WDDM busiest engine"}}}
+			mergeHelperGPUs(&r, helperGPUs(sensors.Report{Sensors: rows}))
+			if len(r.Devices) != 1 {
+				t.Fatal(r)
+			}
+			g := r.Devices[0]
+			if g.ID != "os-adapter" || g.Temperature == nil || *g.Temperature != 62 || g.Power == nil || *g.Power != 25 {
+				t.Fatal(g)
+			}
+			if tc.integrated {
+				if g.SharedUsed == nil || *g.SharedUsed != 256<<20 || g.MemoryTotal != nil || *g.Utilization != 17 || g.UtilizationCounter != "WDDM busiest engine" {
+					t.Fatal(g)
+				}
+			} else if g.MemoryUsed == nil || *g.MemoryUsed != 256<<20 || g.MemoryTotal == nil || *g.MemoryTotal != 8192<<20 || *g.Utilization != 33 {
+				t.Fatal(g)
+			}
+		})
+	}
+}
