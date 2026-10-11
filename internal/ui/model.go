@@ -34,6 +34,7 @@ type terminateMsg struct {
 }
 
 type Model struct {
+	meterPreference                                             string
 	ctx                                                         context.Context
 	collector                                                   *metrics.Collector
 	opts                                                        Options

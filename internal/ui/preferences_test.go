@@ -90,6 +90,9 @@ func TestWorkspacePersistenceAndInvalidConfigIsAtomic(t *testing.T) {
 	m.moveCard(1, 4)
 	m.spans[2] = Span{2, 2}
 	m.kinds[0] = 6
+	if err := m.SetMeterPreference("fira"); err != nil {
+		t.Fatal(err)
+	}
 	path := filepath.Join(t.TempDir(), "config", "layout.json")
 	if err := m.SaveWorkspace(path); err != nil {
 		t.Fatal(err)
@@ -107,6 +110,11 @@ func TestWorkspacePersistenceAndInvalidConfigIsAtomic(t *testing.T) {
 		t.Fatal("narrow terminal erased preferences")
 	}
 	original := n.Workspace()
+	badMeters := original
+	badMeters.Meters = "unknown-font"
+	if err := n.ApplyWorkspace(badMeters); err == nil || n.Workspace() != original {
+		t.Fatal("invalid meter setting changed the workspace")
+	}
 	for _, bad := range []Workspace{{}, {Version: 99}, {Version: 1, Order: [panelCount]int{0, 0, 2, 3, 4, 5, 6}}, {Version: 1, Order: original.Order, Kinds: original.Kinds, Spans: [panelCount]Span{}}} {
 		if err := n.ApplyWorkspace(bad); err == nil {
 			t.Fatal("invalid workspace accepted")

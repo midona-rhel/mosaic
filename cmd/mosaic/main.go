@@ -34,8 +34,8 @@ func run() error {
 	asciiLogos := flag.Bool("ascii-logos", false, "Use plain ASCII for expanded OS logos too")
 	noMouse := flag.Bool("no-mouse", false, "Disable mouse capture for terminal text selection")
 	noTerminalEffects := flag.Bool("no-terminal-effects", false, "Disable pointer, cursor-guide, default background and title overrides")
-	fira := flag.Bool("fira", false, "Use joined meters (select Fira Code in your terminal)")
-	meters := flag.String("meters", "", "Meter font: fira or portable (default: UNICODE_PROGRESS_BAR, otherwise portable)")
+	fira := flag.Bool("fira", false, "Use and remember joined meters (select Fira Code in your terminal)")
+	meters := flag.String("meters", "", "Use and remember fira or portable meters (default: environment, saved preference, then portable)")
 	readOnly := flag.Bool("read-only", false, "Disable process termination")
 	snapshot := flag.Bool("snapshot", false, "Print one dashboard and exit")
 	cpuDiagnostics := flag.Bool("cpu-diagnostics", false, "Print CPU-only sensor diagnostics as JSON and exit")
@@ -157,6 +157,15 @@ func run() error {
 			return fmt.Errorf("load layout: %w (use --no-save-layout to bypass)", err)
 		}
 		if err := model.OpenPanel(*panel); err != nil {
+			return err
+		}
+	}
+	if *meters != "" {
+		if err := model.SetMeterPreference(*meters); err != nil {
+			return err
+		}
+	} else if os.Getenv("UNICODE_PROGRESS_BAR") == "" && model.MeterPreference() != "" {
+		if err := os.Setenv("UNICODE_PROGRESS_BAR", fmt.Sprint(model.MeterPreference() == "fira")); err != nil {
 			return err
 		}
 	}

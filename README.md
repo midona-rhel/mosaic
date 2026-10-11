@@ -16,7 +16,7 @@ For joined meters, install the optional [bundled Fira Code fonts](assets/fonts/R
 .\mosaic.exe --fira --color
 ```
 
-On Linux/macOS: `./mosaic --fira --color`. `--meters fira` remains supported as an alias. `UNICODE_PROGRESS_BAR=true` also opts in. `--meters portable` overrides that environment variable. Fira meters use its private `U+EE00`–`U+EE05` glyphs; terminals cannot reliably report whether the selected font contains them. The main previews show the optional Fira style; [the portable preview](docs/preview-portable.png) shows the default at 120×30.
+On Linux/macOS: `./mosaic --fira --color`. The choice is saved when you exit the interactive app; future launches need no flag. Run `mosaic --meters portable` once to switch back. `--no-save-layout` skips saved preferences, and demo/snapshot commands do not save them. `--meters fira` remains supported as an alias. `UNICODE_PROGRESS_BAR=true` also opts in. `--meters portable` overrides that environment variable. Fira meters use its private `U+EE00`–`U+EE05` glyphs; terminals cannot reliably report whether the selected font contains them. The main previews show the optional Fira style; [the portable preview](docs/preview-portable.png) shows the default at 120×30.
 
 Bubble Tea adapts colors to the terminal and respects `NO_COLOR`. Pass `--color` to explicitly force true color. Utilization is blue at low values, blends into neon purple as it rises, and reaches red near saturation. Network graphs stay blue/purple: high throughput alone is not a health warning.
 

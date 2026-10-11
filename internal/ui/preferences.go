@@ -19,9 +19,21 @@ type Workspace struct {
 	Kinds    [panelCount]int  `json:"kinds"`
 	Spans    [panelCount]Span `json:"spans"`
 	Disabled [panelCount]bool `json:"disabled"`
+	Meters   string           `json:"meters,omitempty"`
 }
 
-func (m *Model) Workspace() Workspace { return Workspace{2, m.order, m.kinds, m.spans, m.disabled} }
+func (m *Model) Workspace() Workspace {
+	return Workspace{Version: 2, Order: m.order, Kinds: m.kinds, Spans: m.spans, Disabled: m.disabled, Meters: m.meterPreference}
+}
+
+func (m *Model) MeterPreference() string { return m.meterPreference }
+func (m *Model) SetMeterPreference(mode string) error {
+	if mode != "" && mode != "fira" && mode != "portable" {
+		return fmt.Errorf("invalid meter preference %q", mode)
+	}
+	m.meterPreference = mode
+	return nil
+}
 func (m *Model) ApplyWorkspace(p Workspace) error {
 	if p.Version == 1 {
 		// Preserve all seven legacy cards and their requested sizes. Add Disk
@@ -49,6 +61,9 @@ func (m *Model) ApplyWorkspace(p Workspace) error {
 		if p.Spans[i].W < 1 || p.Spans[i].W > 16 || p.Spans[i].H < 1 || p.Spans[i].H > 16 {
 			return fmt.Errorf("invalid panel size")
 		}
+	}
+	if err := m.SetMeterPreference(p.Meters); err != nil {
+		return err
 	}
 	m.order, m.kinds, m.spans, m.disabled = p.Order, p.Kinds, p.Spans, p.Disabled
 	m.reveal()
