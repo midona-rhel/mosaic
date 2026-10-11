@@ -34,6 +34,7 @@ func run() error {
 	asciiLogos := flag.Bool("ascii-logos", false, "Use plain ASCII for expanded OS logos too")
 	noMouse := flag.Bool("no-mouse", false, "Disable mouse capture for terminal text selection")
 	noTerminalEffects := flag.Bool("no-terminal-effects", false, "Disable pointer, cursor-guide, default background and title overrides")
+	fira := flag.Bool("fira", false, "Use joined meters (select Fira Code in your terminal)")
 	meters := flag.String("meters", "", "Meter font: fira or portable (default: UNICODE_PROGRESS_BAR, otherwise portable)")
 	readOnly := flag.Bool("read-only", false, "Disable process termination")
 	snapshot := flag.Bool("snapshot", false, "Print one dashboard and exit")
@@ -54,6 +55,12 @@ func run() error {
 	}
 	if flag.NArg() != 0 {
 		return fmt.Errorf("unexpected arguments; use --help")
+	}
+	if *fira {
+		if *meters != "" && *meters != "fira" {
+			return fmt.Errorf("--fira cannot be combined with --meters %s", *meters)
+		}
+		*meters = "fira"
 	}
 	switch *meters {
 	case "":

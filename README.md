@@ -13,10 +13,10 @@ Building from source requires **Go 1.26 or newer** and a Unicode terminal. Meter
 For joined meters, install the optional [bundled Fira Code fonts](assets/fonts/README.md), select Fira Code in your terminal, and run:
 
 ```powershell
-.\mosaic.exe --meters fira --color
+.\mosaic.exe --fira --color
 ```
 
-On Linux/macOS: `./mosaic --meters fira --color`. `UNICODE_PROGRESS_BAR=true` also opts in. `--meters portable` overrides that environment variable. Fira meters use its private `U+EE00`–`U+EE05` glyphs; terminals cannot reliably report whether the selected font contains them. The main previews show the optional Fira style; [the portable preview](docs/preview-portable.png) shows the default at 120×30.
+On Linux/macOS: `./mosaic --fira --color`. `--meters fira` remains supported as an alias. `UNICODE_PROGRESS_BAR=true` also opts in. `--meters portable` overrides that environment variable. Fira meters use its private `U+EE00`–`U+EE05` glyphs; terminals cannot reliably report whether the selected font contains them. The main previews show the optional Fira style; [the portable preview](docs/preview-portable.png) shows the default at 120×30.
 
 Bubble Tea adapts colors to the terminal and respects `NO_COLOR`. Pass `--color` to explicitly force true color. Utilization is blue at low values, blends into neon purple as it rises, and reaches red near saturation. Network graphs stay blue/purple: high throughput alone is not a health warning.
 
@@ -61,7 +61,7 @@ PowerShell, cmd, Bash, zsh and fish are shells. The terminal hosting them contro
 On Windows, use Windows 10 1809 or later / Windows 11; the native console smoke check uses ConPTY. Bubble Tea enables Windows VT input/output and restores console state. Legacy consoles, `TERM=dumb`, and PowerShell ISE are not full interactive terminal targets. Microsoft explicitly [documents ISE's lack of interactive console-app support](https://devblogs.microsoft.com/powershell/console-application-non-support-in-the-ise/). Use `--snapshot` or `--json` when piping output or running without an interactive terminal.
 
 - Colors adapt to the terminal's detected profile; `--color` explicitly forces true color and `NO_COLOR` is respected otherwise.
-- `--meters portable` uses standard Unicode meters with other fonts; `--meters fira` opts into joined Fira Code glyphs.
+- `--meters portable` uses standard Unicode meters with other fonts; `--fira` opts into joined Fira Code glyphs.
 - `--no-terminal-effects` disables pointer, cursor-guide, background-default and title overrides while retaining mouse input.
 - `--no-mouse` keeps all keyboard actions available and allows normal terminal text selection.
 - Without ligatures, `->` stays ordinary ASCII and the same hit targets still work. Fira Code is optional; font shaping is a terminal setting.

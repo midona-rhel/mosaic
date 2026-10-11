@@ -37,7 +37,8 @@ Extract the archive, open your terminal in this folder, and run:
   {command}
 
 Use a 120-column by 30-row terminal for the standard dashboard. Fira Code
-is included for joined meters; --meters portable works with other fonts.
+is included for joined meters: select it in your terminal and use --fira.
+Portable meters are the default for other fonts.
 Chafa is not required. See README.md for controls, docs/telemetry.md for
 hardware support, and docs/interaction-demo.gif for the interactive demo.
 

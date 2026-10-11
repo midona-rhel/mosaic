@@ -42,7 +42,7 @@ References: [Bubble Tea's pinned Windows console setup](https://github.com/charm
 
 Install the bundled Regular/Bold fonts and choose **Fira Code** in the host terminal’s font settings. In Windows Terminal, set the profile’s `font.face` to `Fira Code`; PowerShell does not select fonts. The upstream [terminal support list](https://github.com/tonsky/FiraCode#terminal-compatibility-list) includes Windows Terminal, WezTerm, kitty and iTerm2; Windows Console itself does not shape ligatures. The latter still supports standard-width monitoring and mouse controls where VT mouse reporting is provided.
 
-Portable meters are the default. `--meters fira` or `UNICODE_PROGRESS_BAR=true` opts into Fira Code's U+EE00–U+EE05 joined glyphs after you select that font. `--meters portable` overrides an inherited font opt-in. Arrow and punctuation ligatures are separate font features and retain their cell counts.
+Portable meters are the default. `--fira` or `UNICODE_PROGRESS_BAR=true` opts into Fira Code's U+EE00–U+EE05 joined glyphs after you select that font. `--meters portable` overrides an inherited font opt-in. Arrow and punctuation ligatures are separate font features and retain their cell counts.
 
 The portable meter paints foreground and background together so the muted track and fill have the same height. ASCII brackets and shaded empty glyphs remain meaningful without color.
 
