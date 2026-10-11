@@ -67,3 +67,33 @@ func TestDragPaintsImmediatelyWhenFrameIsDue(t *testing.T) {
 		t.Fatal("due frame must render immediately without another timer")
 	}
 }
+
+func TestRepeatedMouseCellDoesNoWork(t *testing.T) {
+	m := testModel()
+	m.SetSize(160, 45)
+	m.floatPanel(1)
+	p := WithMousePointer(m).(*pointerModel)
+	r := m.windows[0].Bounds
+	p.Update(mouse(r.X+3, r.Y+1))
+	motion := tea.MouseMotionMsg{X: r.X + 8, Y: r.Y + 1, Button: tea.MouseLeft}
+	p.Update(motion)
+	p.Update(dragFrameMsg(p.frameGeneration))
+	p.View()
+	before := *p.drag
+	// A frame is due, but duplicate coordinates must not schedule or paint it.
+	p.lastFrame = time.Now().Add(-time.Second)
+	painted := p.lastFrame
+	allocs := testing.AllocsPerRun(100, func() {
+		_, cmd := p.Update(motion)
+		if cmd != nil {
+			t.Fatal("duplicate cell scheduled work")
+		}
+		p.View()
+	})
+	if !p.valid || p.framePending || *p.drag != before || p.lastFrame != painted {
+		t.Fatal("duplicate mouse cell changed the drag or repainted")
+	}
+	if allocs != 0 {
+		t.Fatalf("duplicate cell allocated %.0f objects", allocs)
+	}
+}

@@ -116,6 +116,12 @@ func (p *pointerModel) Init() tea.Cmd {
 }
 
 func (p *pointerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	// Mouse coordinates are terminal cells, not pixels. Some hosts repeat
+	// reports within a cell; ignore them before hit testing or layout work.
+	if motion, ok := msg.(tea.MouseMotionMsg); ok && motion.X == p.mouseX && motion.Y == p.mouseY {
+		return p, nil
+	}
+
 	if frame, ok := msg.(dragFrameMsg); ok {
 		if uint64(frame) == p.frameGeneration {
 			p.framePending = false
