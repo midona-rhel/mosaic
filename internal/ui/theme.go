@@ -70,16 +70,16 @@ func duration(seconds uint64) string {
 	return fmt.Sprintf("%dh %02dm", h, m)
 }
 func bar(value float64, w int) string {
-	return progressBar(value, w, os.Getenv("UNICODE_PROGRESS_BAR") != "false")
+	return progressBar(value, w, os.Getenv("UNICODE_PROGRESS_BAR") == "true")
 }
 
 // Fira Code's documented U+EE00..EE05 progress glyphs join across cells.
-// Default to Fira Code; UNICODE_PROGRESS_BAR=false selects portable meters.
+// Private-use glyphs require explicit opt-in; ordinary terminal fonts use blocks.
 func progressBar(value float64, w int, fira bool) string {
 	return meter(value, w, fira, -1)
 }
 func chargeBar(value float64, w int) string {
-	return meter(value, w, os.Getenv("UNICODE_PROGRESS_BAR") != "false", 100-value)
+	return meter(value, w, os.Getenv("UNICODE_PROGRESS_BAR") == "true", 100-value)
 }
 func meter(value float64, w int, fira bool, heat float64) string {
 	if w <= 0 {

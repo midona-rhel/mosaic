@@ -4,32 +4,37 @@ package metrics
 
 import (
 	"context"
-	"os"
+	"encoding/json"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"syscall"
 )
 
 func configureGPUCommand(cmd *exec.Cmd) { cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true} }
 
-// CIM class identifiers are locale-independent, unlike English Get-Counter
-// paths. Do not use Win32_VideoController.AdapterRAM: its uint32 truncates VRAM.
-const windowsGPUScript = `
-$ErrorActionPreference='Stop'
-[Console]::OutputEncoding=New-Object System.Text.UTF8Encoding($false)
-$inventory=@(Get-CimInstance Win32_VideoController | Select-Object Name,PNPDeviceID)
-$engines=@();$memory=@();$problems=@()
-try { $engines=@(Get-CimInstance Win32_PerfFormattedData_GPUPerformanceCounters_GPUEngine | Select-Object Name,UtilizationPercentage) } catch { $problems+='WDDM engine counters unavailable; a WDDM 2.x driver is required' }
-try { $memory=@(Get-CimInstance Win32_PerfFormattedData_GPUPerformanceCounters_GPUAdapterMemory | Select-Object Name,DedicatedUsage,SharedUsage) } catch { $problems+='WDDM adapter memory counters unavailable' }
-ConvertTo-Json -Depth 4 -Compress -InputObject @{Inventory=$inventory;Engines=$engines;Memory=$memory;Problems=$problems}
-`
+// WMI class identifiers are locale-independent. Native COM queries avoid
+// launching PowerShell for every telemetry refresh.
+func windowsGPUCounters(ctx context.Context) ([]byte, error) {
+	var r windowsGPUReport
+	var err error
+	r.Inventory, err = querySensors[windowsGPUInventory](ctx, "root/cimv2", "SELECT Name,PNPDeviceID FROM Win32_VideoController")
+	if err != nil {
+		r.Problems = append(r.Problems, "GPU inventory: "+err.Error())
+	}
+	r.Engines, err = querySensors[windowsGPUEngine](ctx, "root/cimv2", "SELECT Name,UtilizationPercentage FROM Win32_PerfFormattedData_GPUPerformanceCounters_GPUEngine")
+	if err != nil {
+		r.Problems = append(r.Problems, "GPU engine counters: "+err.Error())
+	}
+	r.Memory, err = querySensors[windowsGPUMemory](ctx, "root/cimv2", "SELECT Name,DedicatedUsage,SharedUsage FROM Win32_PerfFormattedData_GPUPerformanceCounters_GPUAdapterMemory")
+	if err != nil {
+		r.Problems = append(r.Problems, "GPU memory counters: "+err.Error())
+	}
+	return json.Marshal(r)
+}
 
 func platformGPU(ctx context.Context) GPUReport {
 	r := GPUReport{}
-	// Use the system copy; never depend on the user's chosen interactive shell.
-	path := filepath.Join(os.Getenv("SystemRoot"), "System32", "WindowsPowerShell", "v1.0", "powershell.exe")
-	data, err := gpuCommand(ctx, path, "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", windowsGPUScript)
+	data, err := windowsGPUCounters(ctx)
 	if err != nil {
 		r.Problems = append(r.Problems, "Windows CIM: "+err.Error())
 	} else {
@@ -37,6 +42,11 @@ func platformGPU(ctx context.Context) GPUReport {
 		if err != nil {
 			r.Problems = append(r.Problems, err.Error())
 		}
+	}
+	if adapters, err := windowsAdapters(); err == nil {
+		nameWindowsAdapters(&r, adapters)
+	} else {
+		r.Problems = append(r.Problems, "DXGI adapter identity: "+err.Error())
 	}
 	nvidia, err := nvidiaGPU(ctx)
 	if err != nil {

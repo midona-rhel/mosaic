@@ -200,8 +200,12 @@ func TestResizeReusesFrameWithinGridStep(t *testing.T) {
 		t.Fatal("unchanged resize proposal repainted the dashboard")
 	}
 	p.Update(tea.MouseMotionMsg{X: r.X + r.W + 20, Y: r.Y + 4, Button: tea.MouseLeft})
+	if !p.framePending {
+		t.Fatal("changed resize proposal failed to schedule a redraw")
+	}
+	p.Update(dragFrameMsg(p.frameGeneration))
 	if p.valid {
-		t.Fatal("changed resize proposal failed to redraw")
+		t.Fatal("scheduled resize frame did not redraw")
 	}
 	p.View()
 	p.Update(tea.MouseReleaseMsg{X: r.X + r.W + 20, Y: r.Y + 4, Button: tea.MouseLeft})

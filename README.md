@@ -8,16 +8,15 @@ A terminal task manager with eleven panel types and eight default responsive rou
 
 Download a build for your OS and architecture from [GitHub Releases](https://github.com/midona-rhel/mosaic/releases). Extract it, open your preferred terminal in that folder, and run `./mosaic --color` on macOS/Linux or `.\mosaic.exe --color` in PowerShell. Prebuilt binaries do not require Go.
 
-Building from source requires **Go 1.26 or newer** and a Unicode terminal. For the intended typography, use **Fira Code** in a terminal with contextual ligatures enabled, such as WezTerm, kitty or iTerm2. The font's `->` ligature still occupies two terminal cells, so hit targets and layout remain aligned. Regular/Bold font files and their SIL OFL license are included in [`assets/fonts`](assets/fonts/README.md). For other monospaced fonts, set `UNICODE_PROGRESS_BAR=false` to use portable meters. The app cannot change the font chosen by your terminal.
+Building from source requires **Go 1.26 or newer** and a Unicode terminal. Meters use portable block characters inside `[ ]` by default, including with Cascadia Mono, Consolas, and ordinary terminal fonts. No font installation is required.
 
-Fira Code’s joined progress meters are the default. Select the installed font; you can explicitly enable the [upstream convention](https://github.com/tonsky/FiraCode#whats-in-the-box):
+For joined meters, install the optional [bundled Fira Code fonts](assets/fonts/README.md), select Fira Code in your terminal, and run:
 
 ```powershell
-$env:UNICODE_PROGRESS_BAR = "true"
-.\bin\mosaic.exe --color
+.\mosaic.exe --meters fira --color
 ```
 
-On Linux/macOS: `UNICODE_PROGRESS_BAR=true ./bin/mosaic --color`. Meters use Fira Code's actual `U+EE00`–`U+EE05` progress glyphs: joined empty and filled start, middle and end cells. These differ from arrow/punctuation ligatures and work even without ligature shaping. Use `UNICODE_PROGRESS_BAR=false` for portable full-height blocks inside `[ ]` brackets. The main previews show the default Fira style; [the portable-meter preview](docs/preview-portable.png) shows the fallback at 120×30.
+On Linux/macOS: `./mosaic --meters fira --color`. `UNICODE_PROGRESS_BAR=true` also opts in. `--meters portable` overrides that environment variable. Fira meters use its private `U+EE00`–`U+EE05` glyphs; terminals cannot reliably report whether the selected font contains them. The main previews show the optional Fira style; [the portable preview](docs/preview-portable.png) shows the default at 120×30.
 
 Bubble Tea adapts colors to the terminal and respects `NO_COLOR`. Pass `--color` to explicitly force true color. Utilization is blue at low values, blends into neon purple as it rises, and reaches red near saturation. Network graphs stay blue/purple: high throughput alone is not a health warning.
 
@@ -45,6 +44,16 @@ go build -trimpath -o .\bin\mosaic.exe .\cmd\mosaic
 
 The optional `scripts/build.ps1` builds the same binary without Make or Bash. Run the executable directly in a terminal; Python is only needed for development previews and smoke tests.
 
+## Windows hardware sensors
+
+CPU utilization works without a helper. CPU temperature and package power need
+an accessible hardware sensor driver; Windows does not expose these through its
+standard CPU-load counters. Mosaic reads a running, WMI-capable
+[Libre Hardware Monitor](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor)
+or Open Hardware Monitor instance. Enable CPU monitoring and confirm the readings
+there first. GPU usage and memory use Windows WDDM counters and DXGI; optional
+GPU temperature/power depend on the available driver provider.
+
 ## Terminals and fallback controls
 
 PowerShell, cmd, Bash, zsh and fish are shells. The terminal hosting them controls mouse reporting, colors and font shaping. Mosaic targets modern Unicode/VT terminals, including **Windows Terminal**, Windows' modern console host, WezTerm, kitty, iTerm2, Terminal.app, GNOME Terminal, Konsole, and VS Code's integrated terminal. Keyboard monitoring does not depend on ligatures or mouse support. This list describes intended compatibility, not a claim of hands-on testing in every emulator.
@@ -52,7 +61,7 @@ PowerShell, cmd, Bash, zsh and fish are shells. The terminal hosting them contro
 On Windows, use Windows 10 1809 or later / Windows 11; the native console smoke check uses ConPTY. Bubble Tea enables Windows VT input/output and restores console state. Legacy consoles, `TERM=dumb`, and PowerShell ISE are not full interactive terminal targets. Microsoft explicitly [documents ISE's lack of interactive console-app support](https://devblogs.microsoft.com/powershell/console-application-non-support-in-the-ise/). Use `--snapshot` or `--json` when piping output or running without an interactive terminal.
 
 - Colors adapt to the terminal's detected profile; `--color` explicitly forces true color and `NO_COLOR` is respected otherwise.
-- `--meters portable` uses standard Unicode meters with other fonts; `--meters fira` selects the default joined Fira Code glyphs.
+- `--meters portable` uses standard Unicode meters with other fonts; `--meters fira` opts into joined Fira Code glyphs.
 - `--no-terminal-effects` disables pointer, cursor-guide, background-default and title overrides while retaining mouse input.
 - `--no-mouse` keeps all keyboard actions available and allows normal terminal text selection.
 - Without ligatures, `->` stays ordinary ASCII and the same hit targets still work. Fira Code is optional; font shaping is a terminal setting.

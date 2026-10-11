@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/charmbracelet/x/ansi"
@@ -58,10 +59,14 @@ func (w pointerOutput) Write(p []byte) (int, error) {
 
 type pointerModel struct {
 	*Model
-	shape string
-	view  tea.View
-	valid bool
+	shape           string
+	view            tea.View
+	valid           bool
+	framePending    bool
+	frameGeneration uint64
 }
+
+type dragFrameMsg uint64
 
 func (p *pointerModel) View() tea.View {
 	if !p.valid {
@@ -109,7 +114,18 @@ func (p *pointerModel) Init() tea.Cmd {
 }
 
 func (p *pointerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if frame, ok := msg.(dragFrameMsg); ok {
+		if uint64(frame) == p.frameGeneration {
+			p.framePending = false
+			p.valid = false
+		}
+		return p, nil
+	}
 	_, motion := msg.(tea.MouseMotionMsg)
+	if !motion {
+		p.frameGeneration++
+		p.framePending = false
+	}
 	before := ""
 	var dragBefore gesture
 	hadDrag := motion && p.drag != nil
@@ -123,6 +139,18 @@ func (p *pointerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		p.shape = ""
 	}
 	_, cmd := p.Model.Update(msg)
+	// Mouse reports can arrive much faster than the terminal's frame rate.
+	// Keep the latest position immediately, but paint once per frame rather
+	// than making every intermediate position wait for a complete dashboard.
+	if motion && hadDrag && p.drag != nil && p.valid {
+		var frame tea.Cmd
+		if !p.framePending && dragBefore != *p.drag {
+			p.framePending = true
+			generation := p.frameGeneration
+			frame = tea.Tick(time.Second/30, func(time.Time) tea.Msg { return dragFrameMsg(generation) })
+		}
+		return p, tea.Batch(cmd, frame, p.syncPointer())
+	}
 	// Ordinary content hover has no visible effect. Reuse the last frame
 	// instead of rebuilding every graph and sorting process rows per pixel.
 	sameProposal := hadDrag && p.drag != nil && dragBefore == *p.drag

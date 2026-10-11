@@ -88,3 +88,24 @@ func TestGPUCacheCancellationAndOutputBound(t *testing.T) {
 		t.Fatal("provider output limit not enforced")
 	}
 }
+
+func TestWindowsAdaptersMatchLUIDRatherThanEnumerationOrder(t *testing.T) {
+	zero, load := 0.0, 82.0
+	r := GPUReport{Devices: []GPU{
+		{ID: "luid_0x0_0xAB_phys_0", Scope: "adapter counters", Utilization: &load},
+		{ID: "luid_0x0_0xCD_phys_0", Scope: "adapter counters", Utilization: &zero},
+		{ID: "luid_0x0_0xEF_phys_0", Scope: "adapter counters"},
+		{ID: "luid_0x0_0xEF_phys_1", Scope: "adapter counters"},
+	}}
+	nameWindowsAdapters(&r, []windowsAdapter{
+		{LUID: "luid_0x00000000_0x000000cd", Name: "Software adapter", Software: true},
+		{LUID: "luid_0x00000000_0x000000ab", Name: "AMD Radeon fixture", Vendor: 0x1002, Memory: 16 << 30},
+		{LUID: "luid_0x00000000_0x000000ef", Name: "Linked fixture", Vendor: 0x1002, Memory: 32 << 30},
+	})
+	if len(r.Devices) != 3 || r.Devices[0].Name != "AMD Radeon fixture" || r.Devices[0].Vendor != "AMD" || r.Devices[0].MemoryTotal == nil || *r.Devices[0].MemoryTotal != 16<<30 {
+		t.Fatalf("wrong DXGI mapping: %+v", r.Devices)
+	}
+	if r.Devices[1].MemoryTotal != nil || r.Devices[2].MemoryTotal != nil {
+		t.Fatal("invented linked-node capacity")
+	}
+}

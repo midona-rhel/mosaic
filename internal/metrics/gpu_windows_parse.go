@@ -6,25 +6,85 @@ import (
 	"math"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 )
 
 var wddmAdapter = regexp.MustCompile(`luid_0x[0-9a-fA-F]+_0x[0-9a-fA-F]+_phys_[0-9]+`)
 var wddmEngine = regexp.MustCompile(`eng_[0-9]+_engtype_[A-Za-z0-9_]+`)
+var wddmLUID = regexp.MustCompile(`(?i)luid_0x([0-9a-f]+)_0x([0-9a-f]+)`)
+
+type windowsAdapter struct {
+	LUID, Name string
+	Vendor     uint32
+	Memory     uint64
+	Software   bool
+}
+
+func adapterLUID(id string) string {
+	parts := wddmLUID.FindStringSubmatch(id)
+	if len(parts) != 3 {
+		return ""
+	}
+	high, e1 := strconv.ParseUint(parts[1], 16, 32)
+	low, e2 := strconv.ParseUint(parts[2], 16, 32)
+	if e1 != nil || e2 != nil {
+		return ""
+	}
+	return fmt.Sprintf("%08x:%08x", high, low)
+}
+
+func nameWindowsAdapters(r *GPUReport, adapters []windowsAdapter) {
+	byID := map[string]windowsAdapter{}
+	for _, a := range adapters {
+		if id := adapterLUID(a.LUID); id != "" {
+			byID[id] = a
+		}
+	}
+	counts := map[string]int{}
+	for _, g := range r.Devices {
+		if g.Scope == "adapter counters" {
+			counts[adapterLUID(g.ID)]++
+		}
+	}
+	var devices []GPU
+	for _, g := range r.Devices {
+		a, ok := byID[adapterLUID(g.ID)]
+		if ok && a.Software {
+			continue
+		}
+		if ok {
+			g.Name = a.Name
+			g.Vendor = map[uint32]string{0x1002: "AMD", 0x10de: "NVIDIA", 0x8086: "Intel"}[a.Vendor]
+			if counts[adapterLUID(g.ID)] == 1 && a.Memory > 0 {
+				total := a.Memory
+				g.MemoryTotal = &total
+			}
+			g.Note += " Adapter identity and dedicated capacity from DXGI LUID."
+		}
+		devices = append(devices, g)
+	}
+	r.Devices = devices
+}
+
+type windowsGPUInventory struct{ Name, PNPDeviceID string }
+type windowsGPUEngine struct {
+	Name                  string
+	UtilizationPercentage *uint64
+}
+type windowsGPUMemory struct {
+	Name                        string
+	DedicatedUsage, SharedUsage *uint64
+}
+type windowsGPUReport struct {
+	Inventory []windowsGPUInventory
+	Engines   []windowsGPUEngine
+	Memory    []windowsGPUMemory
+	Problems  []string
+}
 
 func parseWindowsGPU(data []byte) (GPUReport, error) {
-	var raw struct {
-		Inventory []struct{ Name, PNPDeviceID string }
-		Engines   []struct {
-			Name                  string
-			UtilizationPercentage *float64
-		}
-		Memory []struct {
-			Name                        string
-			DedicatedUsage, SharedUsage *uint64
-		}
-		Problems []string
-	}
+	var raw windowsGPUReport
 	if err := json.Unmarshal(data, &raw); err != nil {
 		return GPUReport{}, fmt.Errorf("invalid Windows GPU JSON: %w", err)
 	}
@@ -45,7 +105,7 @@ func parseWindowsGPU(data []byte) (GPUReport, error) {
 		if id == "" || engine == "" || v.UtilizationPercentage == nil {
 			continue
 		}
-		value := *v.UtilizationPercentage
+		value := float64(*v.UtilizationPercentage)
 		if value < 0 || math.IsNaN(value) || math.IsInf(value, 0) {
 			continue
 		}

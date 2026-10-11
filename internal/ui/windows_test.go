@@ -351,6 +351,13 @@ func TestBracketedProgressGlyphsKeepTerminalCellWidths(t *testing.T) {
 			}
 		}
 	}
+	t.Setenv("UNICODE_PROGRESS_BAR", "")
+	for _, render := range []func(float64, int) string{bar, chargeBar} {
+		plain := ansi.Strip(render(60, 12))
+		if !strings.HasPrefix(plain, "[") || !strings.HasSuffix(plain, "]") {
+			t.Fatalf("default meter requires a special font: %q", plain)
+		}
+	}
 	t.Setenv("UNICODE_PROGRESS_BAR", "true")
 	if bar(60, 12) != progressBar(60, 12, true) {
 		t.Fatal("upstream font opt-in ignored")

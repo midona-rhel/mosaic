@@ -124,18 +124,18 @@ Open the dedicated GPU panel with **g**, its dashboard card, or **7** in the def
 | Windows / NVIDIA | Same documented NVIDIA provider | Same optional device fields; WDDM restrictions can withhold metrics |
 | Linux / AMD amdgpu | DRM device sysfs plus hwmon | `gpu_busy_percent`, `mem_info_vram_used/total`; readable `temp1_input` in millidegrees and `power1_average` in microwatts |
 | Linux / Intel, Virtio, other DRM | DRM device inventory | PCI/vendor identity. Device-wide utilization is unavailable without a supported counter; the app does not extrapolate a global percentage from the processes it can see |
-| Windows / WDDM 2.x AMD, Intel, NVIDIA | CIM GPU Engine and GPU Adapter Memory formatted performance classes | Per-LUID/physical-adapter busiest engine; dedicated allocation and shared allocation. Dedicated total capacity is unavailable from this source |
+| Windows / WDDM 2.x AMD, Intel, NVIDIA | CIM GPU Engine and GPU Adapter Memory formatted performance classes | Per-LUID/physical-adapter busiest engine; dedicated allocation and shared allocation. Dedicated capacity and adapter names come from matching DXGI LUIDs |
 | macOS / Apple, Intel, AMD accelerators | IOKit `IOAccelerator` registry enumeration via structured `ioreg -a` XML | Optional `Device Utilization %` or `GPU Activity(%)`; driver temperature with a model-matched AppleSMC fallback for M1–M5 integrated GPUs. These properties are driver-specific and undocumented; availability can change across hardware/macOS versions |
 
 NVIDIA's utilization is the percentage of its driver sampling period with work executing, not memory occupancy. `utilization.memory` would mean memory-controller activity, not VRAM fullness, and is deliberately not substituted for used/total bytes. Unsupported `N/A` and `[Not Supported]` values remain absent. Driver polling is optional; failure does not remove CPU, RAM, processes, or disks.
 
-Windows Task Manager's model takes the **busiest engine**, rather than averaging independent engines. Mosaic groups GPU Engine instances by LUID, physical adapter and engine number/type, sums process contributions to each engine, clamps each to 100, then takes the busiest. CIM class identifiers avoid localized English counter paths. Hardware names from `Win32_VideoController` are shown separately from LUID groups: the app does not pretend that enumeration order maps a GPU name to a LUID. Its 32-bit `AdapterRAM` field is not used as VRAM capacity. NVIDIA device results and WDDM engine results can both be visible because they have different semantics; they are not summed into a machine GPU percentage.
+Windows Task Manager's model takes the **busiest engine**, rather than averaging independent engines. Mosaic groups GPU Engine instances by LUID, physical adapter and engine number/type, sums process contributions to each engine, clamps each to 100, then takes the busiest. CIM class identifiers avoid localized English counter paths. Hardware names and dedicated capacities are matched through DXGI LUIDs; enumeration order is never used for the association. Its 32-bit `AdapterRAM` field is not used as VRAM capacity. NVIDIA device results and WDDM engine results can both be visible because they have different semantics; they are not summed into a machine GPU percentage.
 
 macOS registry enumeration uses a public IOKit tool, but the utilization properties are **not a guaranteed public telemetry contract**. The established [Stats GPU reader](https://github.com/exelban/stats/blob/master/Modules/GPU/reader.swift) reads these same keys. Missing keys remain unavailable, including on Apple Silicon versions that only expose useful activity through private IOReport channels. Mosaic neither executes sudo/powermetrics automatically nor fabricates an IOReport reading. [macmon](https://github.com/vladkens/macmon) and [gptop's Apple backend](https://github.com/evilsocket/gptop/blob/main/docs/backends/apple.md) are researched alternatives that use private IOReport P-state residency; integrating them would require release-specific compatibility testing. Unified system RAM is never labeled a discrete GPU's dedicated VRAM.
 
 Linux Intel DRM fdinfo exports **per-client** activity and sometimes engine capacity/cycles. The [bottom Intel collector](https://github.com/ClementTsang/bottom/blob/7d65d62c8310f592727e6a142007f761504c2c8b/src/collection/gpu/intel.rs) and kernel documentation show the identity/deduplication/delta requirements. Visible-process fdinfo can miss other users and protected processes; summing it and calling it whole-device GPU use would be misleading. That backend is not implemented in this version, and the UI says that utilization is unavailable.
 
-GPU commands run without shell interpolation, without user profiles, with a three-second context deadline and a 2 MiB output bound. Windows launches the system PowerShell noninteractively with a hidden console; it does not require the user to run PowerShell as their shell. GPU reports are cached for five seconds and carry their own timestamp. OS/driver restrictions are reported instead of replacing live data with demo values.
+GPU commands run without shell interpolation, without user profiles, with a three-second context deadline and a 2 MiB output bound. Windows CPU/GPU counters use native WMI/COM; optional driver tools use a hidden console. GPU reports are cached for five seconds and carry their own timestamp. OS/driver restrictions are reported instead of replacing live data with demo values.
 
 Primary references:
 
@@ -154,7 +154,7 @@ Primary references:
 
 Provider parser tests cover real schema shapes with **representative fixtures**, not claimed live hardware captures: unsupported NVIDIA values, MiB conversion, 64-bit Windows memory, busiest-engine aggregation, missing Apple keys, malformed output, sysfs device deduplication, AMD sensor units, cache behavior and cancellation. CPU tests cover Linux guest accounting and Windows interrupt inclusion. Live Linux collection and real terminal interaction are checked locally.
 
-Native Windows and macOS runtime checks are configured in CI. PowerShell 5.1 and 7 launch tests and a native Windows ConPTY interaction test are included. **They have not run in this Linux workspace or remotely yet.** Cross-compilation confirms build compatibility, not measurement correctness on those OSes or GPU hardware.
+Native Windows and macOS runtime checks are configured in CI. PowerShell 5.1 and 7 launch tests and a native Windows ConPTY interaction test are included. Native Linux, Windows, and macOS suites passed for v0.1.0; physical GPU/sensor validation remains separate. Cross-compilation confirms build compatibility, not measurement correctness on those OSes or GPU hardware.
 
 Before claiming fully validated support, record native results on Windows WDDM AMD/Intel/NVIDIA, Linux amdgpu/NVIDIA/Intel, Apple Silicon, and Intel Macs with discrete graphics. Compare equivalent definitions against documented OS tools under idle/load, permission restrictions, missing drivers and resize/mouse interactions. macOS IOReport activity, Intel whole-device GPU utilization, GPU processes, memory pressure, GPU clocks/fans and per-process disk I/O remain outside the implemented fields. These omissions are explicit; no universal library is advertised as filling them.
 
@@ -167,7 +167,7 @@ Added after the feature-completeness audit identified this missing metric. Readi
 | Linux x64/ARM64 | Reads CPU hwmon `temp*_input`, `_label`, `_crit`, `_fault`, `_enable`; explicitly named CPU thermal zones as fallback. [Linux sysfs ABI](https://docs.kernel.org/hwmon/sysfs-interface.html), [coretemp](https://docs.kernel.org/hwmon/coretemp.html), [k10temp](https://docs.kernel.org/hwmon/k10temp.html), [k8temp](https://docs.kernel.org/hwmon/k8temp.html) | Drivers and readable sensors are required; VMs/containers often expose none. Generic ACPI, motherboard, NVMe and GPU sensors are excluded. |
 | Intel macOS | Pinned [gopsutil SMC reader](https://github.com/shirou/gopsutil/blob/v4.26.9/sensors/sensors_darwin.go); selects CPU diode `TC0D` | Proximity/heatsink keys are not die readings. The upstream backend returns zero on failed reads, so zero is conservatively omitted. |
 | Apple Silicon macOS | Pinned [gopsutil IOHID reader](https://github.com/shirou/gopsutil/blob/v4.26.9/sensors/sensors_darwin_arm64.go); explicitly CPU-named sensors and `pACC`/`eACC MTR Temp Sensor` families | Private/model-dependent interfaces; no guarantee on every macOS/Mac. The CPU/GPU/SoC distinction matches [Stats’ HID sensor map](https://github.com/exelban/stats/blob/master/Modules/Sensors/values.swift). |
-| Windows x64/ARM64 | Queries `root/LibreHardwareMonitor` then `root/OpenHardwareMonitor` through system PowerShell/CIM; joins Sensor.Parent to Hardware.Identifier where HardwareType is Cpu | Requires a running compatible WMI provider and functioning sensor driver. Windows ARM64 driver support may be absent. No installation, driver loading or privilege elevation is performed. |
+| Windows x64/ARM64 | Queries `root/LibreHardwareMonitor` then `root/OpenHardwareMonitor` through native WMI/COM; joins Sensor.Parent to Hardware.Identifier where HardwareType is Cpu | Requires a running compatible WMI provider and functioning sensor driver. Windows ARM64 driver support may be absent. No installation, driver loading or privilege elevation is performed. |
 
 The Windows adapter was checked against Libre Hardware Monitor **v0.9.4** [Sensor.cs](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.4/LibreHardwareMonitor/WMI/Sensor.cs), [Hardware.cs](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.4/LibreHardwareMonitor/WMI/Hardware.cs) and [WmiProvider.cs](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.4/LibreHardwareMonitor/WMI/WmiProvider.cs). This specifies a WMI interface, not blanket compatibility with every later build. Newer builds that do not publish this interface will report unavailable. `Sensor.Max` is a historical maximum, not a thermal limit, and is deliberately not used as a critical threshold. These references are not vendored. The upstream WMI provider serializes null as zero; the adapter conservatively rejects zero/missing/non-finite/out-of-range readings.
 
@@ -184,12 +184,12 @@ Tests cover units, sensor selection, fault flags, device-subdirectory layouts, G
 | Platform | Implemented power source | Availability and semantics |
 | --- | --- | --- |
 | Linux x64/ARM64 | Read-only powercap RAPL `energy_uj` deltas divided by monotonic elapsed time, with class/device aliases deduplicated | Requires a kernel/CPU exposing readable RAPL domains. Package roots contribute to the headline; cores, uncore, DRAM and platform domains are listed separately and never added to packages. ARM devices without RAPL report unavailable. |
-| Windows x64/ARM64 | Existing Libre Hardware Monitor / Open Hardware Monitor WMI CPU `Power` sensors | Same bounded, two-second CIM query as CPU temperatures, refreshed every five seconds. Requires a compatible running provider and driver; ARM64 support is provider-dependent. Package sensors are distinct from cores, graphics, memory and platform power. No install, elevation or driver loading. |
+| Windows x64/ARM64 | Existing Libre Hardware Monitor / Open Hardware Monitor WMI CPU `Power` sensors | Same bounded, two-second native WMI query as CPU temperatures, refreshed every five seconds. Requires a compatible running provider and driver; ARM64 support is provider-dependent. Package sensors are distinct from cores, graphics, memory and platform power. No install, elevation or driver loading. |
 | Intel / Apple Silicon macOS | Native, read-only AppleSMC package keys `PCPC`, `PCPT`, `PCPR`, in that priority order | Alternative keys, never summed. The reader uses IOKit via purego and does not need CGO or launch sudo. Recognized keys depend on Mac model/macOS version; many Apple Silicon configurations may return unavailable. This is not an IOReport/powermetrics backend. |
 
 Linux power samples are interval averages, not instantaneous measurements. The first sample, counter decrease (wrap or reset), changed counter range, and recovery after a failed read all rebaseline rather than fabricate spikes. Missing devices discard their baselines. Incomplete package readings never become a partial total. `constraint_*_power_limit_uw` and `constraint_*_time_window_us` are shown as **configured limits**, with their names and windows, never as actual consumption or rated TDP. This code never writes to powercap.
 
-Windows power and clock records are filtered to CPU hardware by the PowerShell query and decoded by SensorType. Provider null/zero power readings remain unavailable because the inspected WMI implementation serializes missing sensor values as zero. Linux's unchanged valid energy counter can legitimately yield 0 W. The macOS reader verifies the key type, payload size, IOKit result and SMC result; it decodes floating point/fixed point units and rejects unknown, non-finite, negative or all-zero payloads. Its ABI/read protocol is adapted from gopsutil under BSD-3-Clause; see `THIRD_PARTY_NOTICES`. It supports only documented-in-source key mappings, without assuming all Macs implement them. Native IOKit calls cannot be forcibly interrupted by a Go context; cancellation is checked between key reads.
+Windows power and clock records are filtered to CPU hardware by the native WMI query and decoded by SensorType. Provider null/zero power readings remain unavailable because the inspected WMI implementation serializes missing sensor values as zero. Linux's unchanged valid energy counter can legitimately yield 0 W. The macOS reader verifies the key type, payload size, IOKit result and SMC result; it decodes floating point/fixed point units and rejects unknown, non-finite, negative or all-zero payloads. Its ABI/read protocol is adapted from gopsutil under BSD-3-Clause; see `THIRD_PARTY_NOTICES`. It supports only documented-in-source key mappings, without assuming all Macs implement them. Native IOKit calls cannot be forcibly interrupted by a Go context; cancellation is checked between key reads.
 
 Clock collection uses Linux cpufreq policy `cpuinfo_cur_freq` when readable and nonzero, otherwise `scaling_cur_freq`. The latter is explicitly labeled **driver reported (may be requested)**. Configured min/max frequency and governor remain separately labeled. Windows exposes CPU core Clock sensors from the same WMI query; bus clocks are excluded. There is no implemented live macOS clock backend. The CPU descriptor's `Mhz` is labeled **OS reference frequency**, because pinned gopsutil may return maximum/nominal frequency; it is never silently presented as the current clock. Physical/logical counts use `cpu.CountsWithContext` and describe the OS-visible topology, not a guessed CPU specification. Processor descriptors show available vendor, family/model/stepping, microcode and feature flags, deduplicated by package/model.
 
@@ -244,7 +244,7 @@ GPU coverage is narrower:
 | --- | --- | --- | --- |
 | NVIDIA on Linux/Windows | NVML via nvidia-smi, if exported | Dedicated used/total, if exported | Unsupported devices/driver modes and native hardware acceptance |
 | AMD amdgpu on Linux | Firmware busy counter | VRAM used/total | Shared/APU accounting and missing sysfs counters |
-| Windows WDDM 2.x | Busiest engine | Dedicated and shared bytes | Capacity and inventory-to-LUID mapping; native driver acceptance |
+| Windows WDDM 2.x | Busiest engine | Dedicated and shared bytes | Physical-driver acceptance and optional sensor coverage |
 | macOS IOAccelerator | Optional driver counter | Not collected | Verified system-wide GPU memory provider; model/OS acceptance |
 | Linux Intel/other DRM | Inventory only | Not collected | A supported activity/memory backend; honest scope for any per-client fdinfo aggregation |
 
@@ -295,3 +295,26 @@ in mAh. Windows uses RemainingCapacity/FullChargedCapacity in Wh only when the
 battery driver declares absolute capacity units; relative/unknown units remain
 unavailable. Instantaneous voltage is not used to invent a Wh capacity. The
 compact card shows remaining/full; the design ratio remains in details.
+
+## Windows setup and adapter identity
+
+CPU load uses Windows processor time counters and does not require a helper.
+CPU die temperature and package power require a hardware sensor driver. Mosaic
+reads the existing `root/LibreHardwareMonitor` or `root/OpenHardwareMonitor` WMI
+provider directly, without launching PowerShell. On a Ryzen 7 5800X3D, use a
+compatible Libre Hardware Monitor build with CPU monitoring enabled, run it
+with the privileges its driver requires, and leave it running. Confirm that
+CPU temperature and CPU Package power appear there. Mosaic cannot obtain those
+readings from ordinary Windows CPU-load counters alone.
+
+WDDM GPU engine and memory counters are queried through native WMI. DXGI adapter
+LUIDs map counter groups to their actual AMD/NVIDIA/Intel device names and
+64-bit dedicated-memory capacities. Software adapters are excluded when DXGI
+identifies them. The dashboard shows the busiest measurable GPU; details retain
+all reported adapters. Linked adapters with multiple physical nodes do not get
+an invented per-node capacity. References: [DXGI_ADAPTER_DESC1](https://learn.microsoft.com/windows/win32/api/dxgi/ns-dxgi-dxgi_adapter_desc1)
+and [Task Manager GPU metrics](https://devblogs.microsoft.com/directx/gpus-in-the-task-manager/).
+
+Native CI covers API execution and fixtures, but its virtual hardware cannot
+verify Ryzen or Radeon sensor accuracy. Compare diagnostics with readings from
+the affected physical machine before treating a hardware issue as resolved.

@@ -52,3 +52,22 @@ func BenchmarkGridResizeMotion(b *testing.B) {
 		})
 	}
 }
+
+func BenchmarkFloatingWindowDrag(b *testing.B) {
+	m := testModel()
+	m.SetSize(160, 45)
+	m.floatPanel(1)
+	p := WithMousePointer(m)
+	r := m.windows[0].Bounds
+	p.Update(mouse(r.X+3, r.Y+1))
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		p.Update(tea.MouseMotionMsg{X: r.X + 3 + i%20, Y: r.Y + 1 + i%5, Button: tea.MouseLeft})
+		if i%20 == 19 {
+			pm := p.(*pointerModel)
+			p.Update(dragFrameMsg(pm.frameGeneration))
+		}
+		p.View()
+	}
+}

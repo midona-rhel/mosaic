@@ -34,7 +34,7 @@ func run() error {
 	asciiLogos := flag.Bool("ascii-logos", false, "Use plain ASCII for expanded OS logos too")
 	noMouse := flag.Bool("no-mouse", false, "Disable mouse capture for terminal text selection")
 	noTerminalEffects := flag.Bool("no-terminal-effects", false, "Disable pointer, cursor-guide, default background and title overrides")
-	meters := flag.String("meters", "", "Meter font: fira or portable (default: UNICODE_PROGRESS_BAR, otherwise fira)")
+	meters := flag.String("meters", "", "Meter font: fira or portable (default: UNICODE_PROGRESS_BAR, otherwise portable)")
 	readOnly := flag.Bool("read-only", false, "Disable process termination")
 	snapshot := flag.Bool("snapshot", false, "Print one dashboard and exit")
 	cpuDiagnostics := flag.Bool("cpu-diagnostics", false, "Print CPU-only sensor diagnostics as JSON and exit")
@@ -120,7 +120,10 @@ func run() error {
 				Build, OS, Architecture, Model, Kernel string
 				Temperature                            metrics.CPUThermalReport
 				Hardware                               metrics.CPUHardware
-			}{version, runtime.GOOS, runtime.GOARCH, modelName, kernel, s.CPUThermal, s.CPUHardware})
+				CPUReady                               bool
+				LogicalCPUPercent                      []float64
+				Problems                               map[string]string
+			}{version, runtime.GOOS, runtime.GOARCH, modelName, kernel, s.CPUThermal, s.CPUHardware, s.CPUReady, s.CPU, s.Problems})
 		}
 		if *jsonOutput {
 			return writeJSON(s)

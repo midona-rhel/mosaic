@@ -149,3 +149,39 @@ func TestHoverCacheInvalidatesOnActionsResizeAndData(t *testing.T) {
 		t.Fatal("telemetry update reused a stale frame")
 	}
 }
+
+func TestDragCoalescesFramesAndReleaseFlushesLatestPosition(t *testing.T) {
+	m := testModel()
+	m.SetSize(160, 45)
+	m.floatPanel(1)
+	p := WithMousePointer(m).(*pointerModel)
+	r := m.windows[0].Bounds
+	p.Update(mouse(r.X+3, r.Y+1))
+	before := p.View().Content
+	for i := 1; i <= 8; i++ {
+		p.Update(tea.MouseMotionMsg{X: r.X + 3 + i, Y: r.Y + 2, Button: tea.MouseLeft})
+		if p.View().Content != before {
+			t.Fatal("repainted intermediate mouse position")
+		}
+	}
+	if !p.framePending || m.drag == nil || m.drag.Preview.X != r.X+8 {
+		t.Fatal("latest drag position was not retained")
+	}
+	p.Update(dragFrameMsg(p.frameGeneration))
+	if p.valid {
+		t.Fatal("frame did not invalidate the cached view")
+	}
+	if p.View().Content == before {
+		t.Fatal("frame did not draw the latest position")
+	}
+	generation := p.frameGeneration
+	p.Update(tea.MouseReleaseMsg{X: r.X + 11, Y: r.Y + 2, Button: tea.MouseLeft})
+	if m.drag != nil || p.valid {
+		t.Fatal("release did not flush the final position")
+	}
+	p.View()
+	p.Update(dragFrameMsg(generation))
+	if !p.valid {
+		t.Fatal("stale drag frame invalidated released view")
+	}
+}

@@ -4,37 +4,53 @@ package metrics
 
 import (
 	"context"
-	"os"
-	"path/filepath"
+	"encoding/json"
 	"time"
 )
 
-// Read only existing WMI providers. Mosaic never starts a driver or elevates.
-const windowsCPUThermalScript = `
-$ErrorActionPreference='Stop'
-[Console]::OutputEncoding=New-Object System.Text.UTF8Encoding($false)
-$rows=@(); $problems=@()
-foreach($ns in @('root/LibreHardwareMonitor','root/OpenHardwareMonitor')) {
- try {
-  $hardware=@(Get-CimInstance -Namespace $ns -ClassName Hardware -Filter "HardwareType='Cpu'" | Select-Object Identifier,Name)
-  $sensors=@(Get-CimInstance -Namespace $ns -ClassName Sensor -Filter "SensorType='Temperature' OR SensorType='Power' OR SensorType='Clock'" | Select-Object Identifier,Parent,Name,Value,SensorType)
-  foreach($s in $sensors) {
-   foreach($h in $hardware) {
-    if($s.Parent -eq $h.Identifier) {
-     $rows+=@{ID=$s.Identifier;Name=$s.Name;Hardware=$h.Name;Source=$ns;Value=$s.Value;Type=$s.SensorType;Parent=$s.Parent}
-    }
-   }
-  }
-  if($rows.Count -gt 0) { break }
- } catch { $problems+=($ns+': '+$_.Exception.Message) }
+type windowsHardware struct{ Identifier, Name string }
+type windowsSensor struct {
+	Identifier, Parent, Name, SensorType string
+	Value                                *float32
 }
-ConvertTo-Json -Depth 4 -Compress -InputObject @{Sensors=$rows;Problems=$problems}
-`
+type windowsSensorRow struct {
+	ID, Parent, Name, Hardware, Source, Type string
+	Value                                    *float32
+}
+
+func windowsCPUSensors(ctx context.Context) ([]byte, error) {
+	report := struct {
+		Sensors  []windowsSensorRow
+		Problems []string
+	}{}
+	for _, ns := range []string{"root/LibreHardwareMonitor", "root/OpenHardwareMonitor"} {
+		hardware, err := querySensors[windowsHardware](ctx, ns, "SELECT Identifier,Name FROM Hardware WHERE HardwareType='Cpu'")
+		if err != nil {
+			report.Problems = append(report.Problems, ns+": "+err.Error())
+			continue
+		}
+		sensors, err := querySensors[windowsSensor](ctx, ns, "SELECT Identifier,Parent,Name,Value,SensorType FROM Sensor WHERE SensorType='Temperature' OR SensorType='Power' OR SensorType='Clock'")
+		if err != nil {
+			report.Problems = append(report.Problems, ns+": "+err.Error())
+			continue
+		}
+		for _, s := range sensors {
+			for _, h := range hardware {
+				if s.Parent == h.Identifier {
+					report.Sensors = append(report.Sensors, windowsSensorRow{s.Identifier, s.Parent, s.Name, h.Name, ns, s.SensorType, s.Value})
+				}
+			}
+		}
+		if len(report.Sensors) > 0 {
+			break
+		}
+	}
+	return json.Marshal(report)
+}
 
 func (c *Collector) platformCPUThermal(ctx context.Context) CPUThermalReport {
 	c.hardware = CPUHardware{Power: CPUPowerReport{At: time.Now(), Problems: []string{"CPU power requires an accessible WMI hardware-monitor provider with CPU Power sensors enabled."}}}
-	path := filepath.Join(os.Getenv("SystemRoot"), "System32", "WindowsPowerShell", "v1.0", "powershell.exe")
-	data, err := gpuCommand(ctx, path, "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", windowsCPUThermalScript)
+	data, err := windowsCPUSensors(ctx)
 	if err != nil {
 		return CPUThermalReport{Problems: []string{"CPU sensor provider: " + err.Error()}}
 	}

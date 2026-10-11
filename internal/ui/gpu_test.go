@@ -77,3 +77,16 @@ func TestGPUCardShowsAllocationWithoutCapacity(t *testing.T) {
 		})
 	}
 }
+
+func TestGPUCardShowsBusyAdapterInsteadOfFirstIdleCounter(t *testing.T) {
+	m := testModel()
+	idle, busy := 0.0, 81.0
+	m.snapshot.GPU.Devices = []metrics.GPU{
+		{Name: "Idle adapter", Utilization: &idle},
+		{Name: "AMD Radeon fixture", Utilization: &busy},
+	}
+	text := strings.Join(m.gpuCard(45, 12), "\n")
+	if !strings.Contains(text, "AMD Radeon fixture") || !strings.Contains(text, "81.0%") {
+		t.Fatalf("wrong primary adapter: %s", text)
+	}
+}

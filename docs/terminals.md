@@ -42,13 +42,13 @@ References: [Bubble Tea's pinned Windows console setup](https://github.com/charm
 
 Install the bundled Regular/Bold fonts and choose **Fira Code** in the host terminal’s font settings. In Windows Terminal, set the profile’s `font.face` to `Fira Code`; PowerShell does not select fonts. The upstream [terminal support list](https://github.com/tonsky/FiraCode#terminal-compatibility-list) includes Windows Terminal, WezTerm, kitty and iTerm2; Windows Console itself does not shape ligatures. The latter still supports standard-width monitoring and mouse controls where VT mouse reporting is provided.
 
-Joined Fira Code progress glyphs are now the default. Select the installed Fira Code font in your terminal. `UNICODE_PROGRESS_BAR=true` explicitly enables the default; `UNICODE_PROGRESS_BAR=false` selects the portable fallback when another font is in use. U+EE00–U+EE05 supply the joined meter outlines; contextual arrow and punctuation ligatures are separate font features and retain their cell counts.
+Portable meters are the default. `--meters fira` or `UNICODE_PROGRESS_BAR=true` opts into Fira Code's U+EE00–U+EE05 joined glyphs after you select that font. `--meters portable` overrides an inherited font opt-in. Arrow and punctuation ligatures are separate font features and retain their cell counts.
 
 The portable meter paints foreground and background together so the muted track and fill have the same height. ASCII brackets and shaded empty glyphs remain meaningful without color.
 
 ## Explicit compatibility controls
 
-Fira Code remains the requested default. Fonts and glyph coverage cannot be reliably queried across terminals. Use `mosaic --meters portable` with other fonts; `--meters fira` explicitly selects the joined font glyphs. These flags override `UNICODE_PROGRESS_BAR` for the current process and work identically from PowerShell, cmd, Bash and zsh.
+Font coverage cannot be reliably queried across terminals. The default therefore uses standard Unicode blocks and brackets. The `--meters` flags override `UNICODE_PROGRESS_BAR` and work identically from PowerShell, cmd, Bash and zsh.
 
 Use `--no-terminal-effects` when host extensions are unavailable or undesirable. It suppresses Mosaic's OSC pointer changes, iTerm cursor-guide command, default background changes and title override. It retains ordinary mouse input and keyboard navigation. Use `--no-mouse` separately when mouse reporting is unavailable. Bubble Tea still uses the normal terminal initialization and VT screen/input protocols. Portable meters require standard Unicode block glyphs; this is not an ASCII-only or legacy non-VT frontend.
 

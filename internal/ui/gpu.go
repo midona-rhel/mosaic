@@ -98,12 +98,12 @@ func (m *Model) gpuCard(w, h int) []string {
 	if len(r.Devices) == 0 {
 		return []string{"", dim.Render("No accessible GPU")}
 	}
-	// Prefer measurable devices; Windows inventory rows are deliberately separate.
+	// Show the busiest measurable adapter, not whichever LUID sorts first.
 	g := r.Devices[0]
 	for _, candidate := range r.Devices {
-		if candidate.Utilization != nil {
+		if candidate.Utilization != nil && (g.Utilization == nil || *candidate.Utilization > *g.Utilization ||
+			(*candidate.Utilization == *g.Utilization && candidate.MemoryUsed != nil && (g.MemoryUsed == nil || *candidate.MemoryUsed > *g.MemoryUsed))) {
 			g = candidate
-			break
 		}
 	}
 	lines := []string{dim.Render(fit(Clean(g.Name), w))}
