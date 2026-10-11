@@ -1,0 +1,414 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="528" viewBox="0 0 768 528">
+<title>Mosaic terminal dashboard — explicitly labeled demo data</title>
+<rect width="768" height="528" rx="12" fill="#100e19"/>
+<path d="M12 0H756Q768 0 768 12V36H0V12Q0 0 12 0" fill="#201b2f"/>
+<circle cx="20" cy="18" r="5" fill="#fb7185"/>
+<circle cx="38" cy="18" r="5" fill="#fbbf24"/>
+<circle cx="56" cy="18" r="5" fill="#86efac"/>
+<text x="384" y="23" text-anchor="middle" fill="#94a3b8" font-family="monospace" font-size="12">mosaic · 80 × 24 · demo</text>
+<g font-family="Fira Code,DejaVu Sans Mono,Consolas,monospace" font-size="15" xml:space="preserve" style="font-variant-ligatures:contextual;font-feature-settings:'calt' 1">
+<rect x="33" y="39" width="72" height="19" fill="#4b266b"/>
+<text x="33" y="54" fill="#e9e8f5" textLength="72" lengthAdjust="spacingAndGlyphs" font-weight="bold"> MOSAIC </text>
+<text x="105" y="54" fill="#87859d" textLength="162" lengthAdjust="spacingAndGlyphs"> // SYSTEM MONITOR</text>
+<text x="681" y="54" fill="#b45cff" textLength="54" lengthAdjust="spacingAndGlyphs">◇ DEMO</text>
+<text x="33" y="73" fill="#87859d" textLength="342" lengthAdjust="spacingAndGlyphs">studio · macOS · arm64 · up 2d 03h 04m</text>
+<text x="33" y="92" fill="#538fff" textLength="9" lengthAdjust="spacingAndGlyphs">╭</text>
+<text x="42" y="92" fill="#568eff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="51" y="92" fill="#598dff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="60" y="92" fill="#5c8dff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="69" y="92" fill="#5f8cff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="78" y="92" fill="#628bff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="87" y="92" fill="#658aff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="96" y="92" fill="#6889ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="105" y="92" fill="#6a88ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="114" y="92" fill="#6d87ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="123" y="92" fill="#6f87ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="132" y="92" fill="#7286ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="141" y="92" fill="#7485ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="150" y="92" fill="#7684ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="159" y="92" fill="#7983ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="168" y="92" fill="#7b82ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="177" y="92" fill="#7d81ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="186" y="92" fill="#7f80ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="195" y="92" fill="#817fff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="204" y="92" fill="#837eff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="213" y="92" fill="#857dff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="222" y="92" fill="#877cff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="231" y="92" fill="#897bff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="240" y="92" fill="#8b7aff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="249" y="92" fill="#8d79ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="258" y="92" fill="#8f78ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="267" y="92" fill="#9177ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="276" y="92" fill="#9276ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="285" y="92" fill="#9475ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="294" y="92" fill="#9674ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="303" y="92" fill="#9873ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="312" y="92" fill="#9972ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="321" y="92" fill="#9b70ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="330" y="92" fill="#9d6fff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="339" y="92" fill="#9f6eff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="348" y="92" fill="#a06dff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="357" y="92" fill="#a26cff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="366" y="92" fill="#a36bff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="375" y="92" fill="#a569ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="384" y="92" fill="#a768ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="393" y="92" fill="#a867ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="402" y="92" fill="#aa66ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="411" y="92" fill="#ab64ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="420" y="92" fill="#ad63ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="429" y="92" fill="#ae62ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="438" y="92" fill="#b060ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="447" y="92" fill="#b15fff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="456" y="92" fill="#b35dff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="465" y="92" fill="#b45cff" textLength="18" lengthAdjust="spacingAndGlyphs">──</text>
+<text x="483" y="92" fill="#b55dff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="492" y="92" fill="#b65fff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="501" y="92" fill="#b860ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="510" y="92" fill="#b962ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="519" y="92" fill="#ba63ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="528" y="92" fill="#bb65ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="537" y="92" fill="#bc66ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="546" y="92" fill="#bd68ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="555" y="92" fill="#be69ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="564" y="92" fill="#bf6bff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="573" y="92" fill="#c06cff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="582" y="92" fill="#c26eff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="591" y="92" fill="#c36fff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="600" y="92" fill="#c471ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="609" y="92" fill="#c572ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="618" y="92" fill="#c674ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="627" y="92" fill="#c775ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="636" y="92" fill="#c877ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="645" y="92" fill="#c978ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="654" y="92" fill="#ca79ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="663" y="92" fill="#cb7bff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="672" y="92" fill="#cc7cff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="681" y="92" fill="#cd7eff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="690" y="92" fill="#ce7fff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="699" y="92" fill="#cf81ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="708" y="92" fill="#d082ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="717" y="92" fill="#d183ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="726" y="92" fill="#d285ff" textLength="9" lengthAdjust="spacingAndGlyphs">╮</text>
+<text x="33" y="111" fill="#538fff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="51" y="111" fill="#b45cff" textLength="27" lengthAdjust="spacingAndGlyphs" font-weight="bold">CPU</text>
+<rect x="654" y="96" width="27" height="19" fill="#332845"/>
+<text x="654" y="111" fill="#e9e8f5" textLength="27" lengthAdjust="spacingAndGlyphs" font-weight="bold"> ↗ </text>
+<rect x="690" y="96" width="27" height="19" fill="#332845"/>
+<text x="690" y="111" fill="#e9e8f5" textLength="27" lengthAdjust="spacingAndGlyphs" font-weight="bold"> x </text>
+<text x="726" y="111" fill="#d589ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="130" fill="#568eff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="726" y="130" fill="#d68bff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="149" fill="#598dff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="51" y="149" fill="#e9e8f5" textLength="108" lengthAdjust="spacingAndGlyphs" font-weight="bold">Apple M2 Pro</text>
+<text x="717" y="149" fill="#538fff" textLength="9" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="726" y="149" fill="#d78cff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="168" fill="#5c8dff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="51" y="168" fill="#87859d" textLength="99" lengthAdjust="spacingAndGlyphs">Temperature</text>
+<text x="663" y="168" fill="#538fff" textLength="63" lengthAdjust="spacingAndGlyphs">64.2°C┃</text>
+<text x="726" y="168" fill="#d88dff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="187" fill="#5f8cff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="51" y="187" fill="#87859d" textLength="117" lengthAdjust="spacingAndGlyphs">Package power</text>
+<text x="663" y="187" fill="#538fff" textLength="63" lengthAdjust="spacingAndGlyphs">24.6 W┃</text>
+<text x="726" y="187" fill="#d98fff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="206" fill="#628bff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="51" y="206" fill="#87859d" textLength="135" lengthAdjust="spacingAndGlyphs">Cores / threads</text>
+<text x="186" y="206" fill="#e9e8f5" textLength="531" lengthAdjust="spacingAndGlyphs">                                                    10 / 10</text>
+<text x="717" y="206" fill="#538fff" textLength="9" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="726" y="206" fill="#da90ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="225" fill="#658aff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="51" y="225" fill="#87859d" textLength="153" lengthAdjust="spacingAndGlyphs">Total utilization</text>
+<text x="204" y="225" fill="#e9e8f5" textLength="513" lengthAdjust="spacingAndGlyphs">                             37.2% across 10 logical CPUs</text>
+<text x="717" y="225" fill="#538fff" textLength="9" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="726" y="225" fill="#db92ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="244" fill="#6889ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="717" y="244" fill="#538fff" textLength="9" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="726" y="244" fill="#dc93ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="263" fill="#6a88ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="717" y="263" fill="#538fff" textLength="9" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="726" y="263" fill="#dd94ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="282" fill="#6d87ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="51" y="282" fill="#747eff" textLength="9" lengthAdjust="spacingAndGlyphs">▂</text>
+<text x="60" y="282" fill="#6f80ff" textLength="9" lengthAdjust="spacingAndGlyphs">▂</text>
+<text x="69" y="282" fill="#6a83ff" textLength="9" lengthAdjust="spacingAndGlyphs">▂</text>
+<text x="78" y="282" fill="#6984ff" textLength="9" lengthAdjust="spacingAndGlyphs">▂</text>
+<text x="87" y="282" fill="#6d81ff" textLength="9" lengthAdjust="spacingAndGlyphs">▂</text>
+<text x="96" y="282" fill="#767cff" textLength="9" lengthAdjust="spacingAndGlyphs">▃</text>
+<text x="105" y="282" fill="#8575ff" textLength="9" lengthAdjust="spacingAndGlyphs">▄</text>
+<text x="114" y="282" fill="#986bff" textLength="9" lengthAdjust="spacingAndGlyphs">▅</text>
+<text x="123" y="282" fill="#ab61ff" textLength="9" lengthAdjust="spacingAndGlyphs">▆</text>
+<text x="132" y="282" fill="#b85bf8" textLength="9" lengthAdjust="spacingAndGlyphs">▇</text>
+<rect x="141" y="267" width="9" height="19" fill="#bd59ed"/>
+<text x="141" y="282" fill="#bd59ed" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="150" y="267" width="9" height="19" fill="#bf59e9"/>
+<text x="150" y="282" fill="#bf59e9" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="159" y="267" width="9" height="19" fill="#bd59ed"/>
+<text x="159" y="282" fill="#bd59ed" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<text x="168" y="282" fill="#b75bf9" textLength="9" lengthAdjust="spacingAndGlyphs">▇</text>
+<text x="177" y="282" fill="#a763ff" textLength="9" lengthAdjust="spacingAndGlyphs">▆</text>
+<text x="186" y="282" fill="#8f70ff" textLength="9" lengthAdjust="spacingAndGlyphs">▄</text>
+<text x="195" y="282" fill="#757dff" textLength="9" lengthAdjust="spacingAndGlyphs">▂</text>
+<text x="204" y="282" fill="#5d8aff" textLength="9" lengthAdjust="spacingAndGlyphs">▁</text>
+<text x="411" y="282" fill="#588cff" textLength="9" lengthAdjust="spacingAndGlyphs">▁</text>
+<text x="420" y="282" fill="#6586ff" textLength="9" lengthAdjust="spacingAndGlyphs">▁</text>
+<text x="429" y="282" fill="#6b83ff" textLength="9" lengthAdjust="spacingAndGlyphs">▂</text>
+<text x="438" y="282" fill="#6b82ff" textLength="9" lengthAdjust="spacingAndGlyphs">▂</text>
+<text x="447" y="282" fill="#6784ff" textLength="9" lengthAdjust="spacingAndGlyphs">▂</text>
+<text x="456" y="282" fill="#6287ff" textLength="9" lengthAdjust="spacingAndGlyphs">▁</text>
+<text x="465" y="282" fill="#5f89ff" textLength="18" lengthAdjust="spacingAndGlyphs">▁▁</text>
+<text x="483" y="282" fill="#6585ff" textLength="9" lengthAdjust="spacingAndGlyphs">▂</text>
+<text x="492" y="282" fill="#717fff" textLength="9" lengthAdjust="spacingAndGlyphs">▂</text>
+<text x="501" y="282" fill="#8276ff" textLength="9" lengthAdjust="spacingAndGlyphs">▃</text>
+<text x="510" y="282" fill="#976bff" textLength="9" lengthAdjust="spacingAndGlyphs">▅</text>
+<text x="519" y="282" fill="#ab61ff" textLength="9" lengthAdjust="spacingAndGlyphs">▆</text>
+<text x="528" y="282" fill="#b85bf6" textLength="9" lengthAdjust="spacingAndGlyphs">▇</text>
+<rect x="537" y="267" width="9" height="19" fill="#be59eb"/>
+<text x="537" y="282" fill="#be59eb" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="546" y="267" width="9" height="19" fill="#c158e7"/>
+<text x="546" y="282" fill="#c158e7" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="555" y="267" width="9" height="19" fill="#bf59ea"/>
+<text x="555" y="282" fill="#bf59ea" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<text x="564" y="282" fill="#b95bf6" textLength="9" lengthAdjust="spacingAndGlyphs">▇</text>
+<text x="573" y="282" fill="#aa61ff" textLength="9" lengthAdjust="spacingAndGlyphs">▆</text>
+<text x="582" y="282" fill="#936dff" textLength="9" lengthAdjust="spacingAndGlyphs">▄</text>
+<text x="591" y="282" fill="#7b7aff" textLength="9" lengthAdjust="spacingAndGlyphs">▃</text>
+<text x="600" y="282" fill="#6486ff" textLength="9" lengthAdjust="spacingAndGlyphs">▁</text>
+<text x="708" y="282" fill="#5c8bff" textLength="9" lengthAdjust="spacingAndGlyphs">▁</text>
+<text x="717" y="282" fill="#36334e" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="726" y="282" fill="#de96ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="301" fill="#6f87ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<rect x="51" y="286" width="9" height="19" fill="#747eff"/>
+<text x="51" y="301" fill="#747eff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="60" y="286" width="9" height="19" fill="#6f80ff"/>
+<text x="60" y="301" fill="#6f80ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="69" y="286" width="9" height="19" fill="#6a83ff"/>
+<text x="69" y="301" fill="#6a83ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="78" y="286" width="9" height="19" fill="#6984ff"/>
+<text x="78" y="301" fill="#6984ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="87" y="286" width="9" height="19" fill="#6d81ff"/>
+<text x="87" y="301" fill="#6d81ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="96" y="286" width="9" height="19" fill="#767cff"/>
+<text x="96" y="301" fill="#767cff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="105" y="286" width="9" height="19" fill="#8575ff"/>
+<text x="105" y="301" fill="#8575ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="114" y="286" width="9" height="19" fill="#986bff"/>
+<text x="114" y="301" fill="#986bff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="123" y="286" width="9" height="19" fill="#ab61ff"/>
+<text x="123" y="301" fill="#ab61ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="132" y="286" width="9" height="19" fill="#b85bf8"/>
+<text x="132" y="301" fill="#b85bf8" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="141" y="286" width="9" height="19" fill="#bd59ed"/>
+<text x="141" y="301" fill="#bd59ed" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="150" y="286" width="9" height="19" fill="#bf59e9"/>
+<text x="150" y="301" fill="#bf59e9" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="159" y="286" width="9" height="19" fill="#bd59ed"/>
+<text x="159" y="301" fill="#bd59ed" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="168" y="286" width="9" height="19" fill="#b75bf9"/>
+<text x="168" y="301" fill="#b75bf9" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="177" y="286" width="9" height="19" fill="#a763ff"/>
+<text x="177" y="301" fill="#a763ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="186" y="286" width="9" height="19" fill="#8f70ff"/>
+<text x="186" y="301" fill="#8f70ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="195" y="286" width="9" height="19" fill="#757dff"/>
+<text x="195" y="301" fill="#757dff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="204" y="286" width="9" height="19" fill="#5d8aff"/>
+<text x="204" y="301" fill="#5d8aff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="213" y="286" width="9" height="19" fill="#538fff"/>
+<text x="213" y="301" fill="#538fff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<text x="222" y="301" fill="#538fff" textLength="180" lengthAdjust="spacingAndGlyphs">▇▇▇▇▇▇▇▇▆▅▄▃▂▁▁▁▂▃▅▆</text>
+<rect x="402" y="286" width="9" height="19" fill="#538fff"/>
+<text x="402" y="301" fill="#538fff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="411" y="286" width="9" height="19" fill="#588cff"/>
+<text x="411" y="301" fill="#588cff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="420" y="286" width="9" height="19" fill="#6586ff"/>
+<text x="420" y="301" fill="#6586ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="429" y="286" width="9" height="19" fill="#6b83ff"/>
+<text x="429" y="301" fill="#6b83ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="438" y="286" width="9" height="19" fill="#6b82ff"/>
+<text x="438" y="301" fill="#6b82ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="447" y="286" width="9" height="19" fill="#6784ff"/>
+<text x="447" y="301" fill="#6784ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="456" y="286" width="9" height="19" fill="#6287ff"/>
+<text x="456" y="301" fill="#6287ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="465" y="286" width="18" height="19" fill="#5f89ff"/>
+<text x="465" y="301" fill="#5f89ff" textLength="18" lengthAdjust="spacingAndGlyphs">██</text>
+<rect x="483" y="286" width="9" height="19" fill="#6585ff"/>
+<text x="483" y="301" fill="#6585ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="492" y="286" width="9" height="19" fill="#717fff"/>
+<text x="492" y="301" fill="#717fff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="501" y="286" width="9" height="19" fill="#8276ff"/>
+<text x="501" y="301" fill="#8276ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="510" y="286" width="9" height="19" fill="#976bff"/>
+<text x="510" y="301" fill="#976bff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="519" y="286" width="9" height="19" fill="#ab61ff"/>
+<text x="519" y="301" fill="#ab61ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="528" y="286" width="9" height="19" fill="#b85bf6"/>
+<text x="528" y="301" fill="#b85bf6" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="537" y="286" width="9" height="19" fill="#be59eb"/>
+<text x="537" y="301" fill="#be59eb" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="546" y="286" width="9" height="19" fill="#c158e7"/>
+<text x="546" y="301" fill="#c158e7" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="555" y="286" width="9" height="19" fill="#bf59ea"/>
+<text x="555" y="301" fill="#bf59ea" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="564" y="286" width="9" height="19" fill="#b95bf6"/>
+<text x="564" y="301" fill="#b95bf6" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="573" y="286" width="9" height="19" fill="#aa61ff"/>
+<text x="573" y="301" fill="#aa61ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="582" y="286" width="9" height="19" fill="#936dff"/>
+<text x="582" y="301" fill="#936dff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="591" y="286" width="9" height="19" fill="#7b7aff"/>
+<text x="591" y="301" fill="#7b7aff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="600" y="286" width="9" height="19" fill="#6486ff"/>
+<text x="600" y="301" fill="#6486ff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<rect x="609" y="286" width="18" height="19" fill="#538fff"/>
+<text x="609" y="301" fill="#538fff" textLength="18" lengthAdjust="spacingAndGlyphs">██</text>
+<text x="627" y="301" fill="#538fff" textLength="18" lengthAdjust="spacingAndGlyphs">▇▇</text>
+<rect x="645" y="286" width="45" height="19" fill="#538fff"/>
+<text x="645" y="301" fill="#538fff" textLength="45" lengthAdjust="spacingAndGlyphs">█████</text>
+<text x="690" y="301" fill="#538fff" textLength="18" lengthAdjust="spacingAndGlyphs">▇▆</text>
+<rect x="708" y="286" width="9" height="19" fill="#5c8bff"/>
+<text x="708" y="301" fill="#5c8bff" textLength="9" lengthAdjust="spacingAndGlyphs">█</text>
+<text x="717" y="301" fill="#36334e" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="726" y="301" fill="#df97ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="320" fill="#7286ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="717" y="320" fill="#36334e" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="726" y="320" fill="#e099ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="339" fill="#7485ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="42" y="339" fill="#e9e8f5" textLength="81" lengthAdjust="spacingAndGlyphs"> CPU 00  </text>
+<text x="123" y="339" fill="#538fff" textLength="117" lengthAdjust="spacingAndGlyphs"></text>
+<text x="240" y="339" fill="#36334e" textLength="405" lengthAdjust="spacingAndGlyphs"></text>
+<text x="645" y="339" fill="#538fff" textLength="72" lengthAdjust="spacingAndGlyphs" font-weight="bold">   22.0%</text>
+<text x="717" y="339" fill="#36334e" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="726" y="339" fill="#e19aff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="358" fill="#7684ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="42" y="358" fill="#e9e8f5" textLength="81" lengthAdjust="spacingAndGlyphs"> CPU 01  </text>
+<text x="123" y="358" fill="#538fff" textLength="180" lengthAdjust="spacingAndGlyphs"></text>
+<text x="303" y="358" fill="#588dff" textLength="9" lengthAdjust="spacingAndGlyphs"></text>
+<text x="312" y="358" fill="#5e89ff" textLength="9" lengthAdjust="spacingAndGlyphs"></text>
+<text x="321" y="358" fill="#6586ff" textLength="9" lengthAdjust="spacingAndGlyphs"></text>
+<text x="330" y="358" fill="#6c82ff" textLength="9" lengthAdjust="spacingAndGlyphs"></text>
+<text x="339" y="358" fill="#727eff" textLength="9" lengthAdjust="spacingAndGlyphs"></text>
+<text x="348" y="358" fill="#797bff" textLength="9" lengthAdjust="spacingAndGlyphs"></text>
+<text x="357" y="358" fill="#36334e" textLength="288" lengthAdjust="spacingAndGlyphs"></text>
+<text x="645" y="358" fill="#7a7bff" textLength="72" lengthAdjust="spacingAndGlyphs" font-weight="bold">   45.0%</text>
+<text x="717" y="358" fill="#36334e" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="726" y="358" fill="#e29cff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="377" fill="#7983ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="42" y="377" fill="#e9e8f5" textLength="81" lengthAdjust="spacingAndGlyphs"> CPU 02  </text>
+<text x="123" y="377" fill="#538fff" textLength="81" lengthAdjust="spacingAndGlyphs"></text>
+<text x="204" y="377" fill="#36334e" textLength="441" lengthAdjust="spacingAndGlyphs"></text>
+<text x="645" y="377" fill="#538fff" textLength="72" lengthAdjust="spacingAndGlyphs" font-weight="bold">   16.0%</text>
+<text x="717" y="377" fill="#36334e" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="726" y="377" fill="#e39dff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="396" fill="#7b82ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="42" y="396" fill="#e9e8f5" textLength="81" lengthAdjust="spacingAndGlyphs"> CPU 03  </text>
+<text x="123" y="396" fill="#538fff" textLength="180" lengthAdjust="spacingAndGlyphs"></text>
+<text x="303" y="396" fill="#588dff" textLength="9" lengthAdjust="spacingAndGlyphs"></text>
+<text x="312" y="396" fill="#5e89ff" textLength="9" lengthAdjust="spacingAndGlyphs"></text>
+<text x="321" y="396" fill="#36334e" textLength="324" lengthAdjust="spacingAndGlyphs"></text>
+<text x="645" y="396" fill="#5f89ff" textLength="72" lengthAdjust="spacingAndGlyphs" font-weight="bold">   38.0%</text>
+<text x="717" y="396" fill="#36334e" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="726" y="396" fill="#e49eff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="415" fill="#7d81ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="42" y="415" fill="#e9e8f5" textLength="81" lengthAdjust="spacingAndGlyphs"> CPU 04  </text>
+<text x="123" y="415" fill="#538fff" textLength="63" lengthAdjust="spacingAndGlyphs"></text>
+<text x="186" y="415" fill="#36334e" textLength="459" lengthAdjust="spacingAndGlyphs"></text>
+<text x="645" y="415" fill="#538fff" textLength="72" lengthAdjust="spacingAndGlyphs" font-weight="bold">   12.0%</text>
+<text x="717" y="415" fill="#36334e" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="726" y="415" fill="#e4a0ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="434" fill="#7f80ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="42" y="434" fill="#e9e8f5" textLength="81" lengthAdjust="spacingAndGlyphs"> CPU 05  </text>
+<text x="123" y="434" fill="#538fff" textLength="144" lengthAdjust="spacingAndGlyphs"></text>
+<text x="267" y="434" fill="#36334e" textLength="378" lengthAdjust="spacingAndGlyphs"></text>
+<text x="645" y="434" fill="#538fff" textLength="72" lengthAdjust="spacingAndGlyphs" font-weight="bold">   28.0%</text>
+<text x="717" y="434" fill="#36334e" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="726" y="434" fill="#e5a1ff" textLength="9" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33" y="453" fill="#817fff" textLength="9" lengthAdjust="spacingAndGlyphs">╰</text>
+<text x="42" y="453" fill="#837eff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="51" y="453" fill="#857dff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="60" y="453" fill="#877cff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="69" y="453" fill="#897bff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="78" y="453" fill="#8b7aff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="87" y="453" fill="#8d79ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="96" y="453" fill="#8f78ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="105" y="453" fill="#9177ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="114" y="453" fill="#9276ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="123" y="453" fill="#9475ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="132" y="453" fill="#9674ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="141" y="453" fill="#9873ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="150" y="453" fill="#9972ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="159" y="453" fill="#9b70ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="168" y="453" fill="#9d6fff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="177" y="453" fill="#9f6eff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="186" y="453" fill="#a06dff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="195" y="453" fill="#a26cff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="204" y="453" fill="#a36bff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="213" y="453" fill="#a569ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="222" y="453" fill="#a768ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="231" y="453" fill="#a867ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="240" y="453" fill="#aa66ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="249" y="453" fill="#ab64ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="258" y="453" fill="#ad63ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="267" y="453" fill="#ae62ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="276" y="453" fill="#b060ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="285" y="453" fill="#b15fff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="294" y="453" fill="#b35dff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="303" y="453" fill="#b45cff" textLength="18" lengthAdjust="spacingAndGlyphs">──</text>
+<text x="321" y="453" fill="#b55dff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="330" y="453" fill="#b65fff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="339" y="453" fill="#b860ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="348" y="453" fill="#b962ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="357" y="453" fill="#ba63ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="366" y="453" fill="#bb65ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="375" y="453" fill="#bc66ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="384" y="453" fill="#bd68ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="393" y="453" fill="#be69ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="402" y="453" fill="#bf6bff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="411" y="453" fill="#c06cff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="420" y="453" fill="#c26eff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="429" y="453" fill="#c36fff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="438" y="453" fill="#c471ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="447" y="453" fill="#c572ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="456" y="453" fill="#c674ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="465" y="453" fill="#c775ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="474" y="453" fill="#c877ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="483" y="453" fill="#c978ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="492" y="453" fill="#ca79ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="501" y="453" fill="#cb7bff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="510" y="453" fill="#cc7cff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="519" y="453" fill="#cd7eff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="528" y="453" fill="#ce7fff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="537" y="453" fill="#cf81ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="546" y="453" fill="#d082ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="555" y="453" fill="#d183ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="564" y="453" fill="#d285ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="573" y="453" fill="#d386ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="582" y="453" fill="#d488ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="591" y="453" fill="#d589ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="600" y="453" fill="#d68bff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="609" y="453" fill="#d78cff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="618" y="453" fill="#d88dff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="627" y="453" fill="#d98fff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="636" y="453" fill="#da90ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="645" y="453" fill="#db92ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="654" y="453" fill="#dc93ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="663" y="453" fill="#dd94ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="672" y="453" fill="#de96ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="681" y="453" fill="#df97ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="690" y="453" fill="#e099ff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="699" y="453" fill="#e19aff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="708" y="453" fill="#e29cff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="717" y="453" fill="#e39dff" textLength="9" lengthAdjust="spacingAndGlyphs">─</text>
+<text x="726" y="453" fill="#e49eff" textLength="9" lengthAdjust="spacingAndGlyphs">╯</text>
+<text x="33" y="491" fill="#538fff" textLength="27" lengthAdjust="spacingAndGlyphs" font-weight="bold">esc</text>
+<text x="60" y="491" fill="#87859d" textLength="45" lengthAdjust="spacingAndGlyphs"> back</text>
+<text x="123" y="491" fill="#538fff" textLength="18" lengthAdjust="spacingAndGlyphs" font-weight="bold">↑↓</text>
+<text x="141" y="491" fill="#87859d" textLength="63" lengthAdjust="spacingAndGlyphs"> scroll</text>
+<text x="222" y="491" fill="#538fff" textLength="9" lengthAdjust="spacingAndGlyphs" font-weight="bold">f</text>
+<text x="231" y="491" fill="#87859d" textLength="72" lengthAdjust="spacingAndGlyphs"> pop-out</text>
+<text x="321" y="491" fill="#538fff" textLength="9" lengthAdjust="spacingAndGlyphs" font-weight="bold">t</text>
+<text x="330" y="491" fill="#87859d" textLength="72" lengthAdjust="spacingAndGlyphs"> replace</text>
+<text x="420" y="491" fill="#538fff" textLength="9" lengthAdjust="spacingAndGlyphs" font-weight="bold">?</text>
+<text x="429" y="491" fill="#87859d" textLength="45" lengthAdjust="spacingAndGlyphs"> help</text>
+<text x="492" y="491" fill="#538fff" textLength="9" lengthAdjust="spacingAndGlyphs" font-weight="bold">r</text>
+<text x="501" y="491" fill="#87859d" textLength="72" lengthAdjust="spacingAndGlyphs"> refresh</text>
+</g></svg>

@@ -1,0 +1,7 @@
+# Fira Code
+
+Unmodified Regular and Bold TTFs from the upstream [Fira Code 6.2 release](https://github.com/tonsky/FiraCode/releases/tag/6.2), used for screenshots and recordings. Copyright and SIL Open Font License are in `LICENSE.txt`.
+
+To use these glyphs and programming ligatures in the live app, install Fira Code and select it in a terminal that supports contextual ligatures (`calt`), such as WezTerm, kitty, or iTerm2 with ligatures enabled. The app cannot change the terminal's font. ASCII arrows such as `->` keep their original two-cell width even when drawn as a ligature. Standard Unicode borders and bars remain usable with other monospaced fonts; private-use glyphs and Nerd Font icons are not required.
+
+Fira Code also supplies dedicated progress glyphs at U+EE00–U+EE05 (not ligatures). Mosaic uses all six glyphs for joined empty and filled start/middle/end cells by default (`UNICODE_PROGRESS_BAR=true`), following the [font author’s convention](https://github.com/tonsky/FiraCode#whats-in-the-box). Select Fira Code in your terminal to display these glyphs. Set `UNICODE_PROGRESS_BAR=false` for thick Unicode blocks inside ASCII brackets when using another font. Captures use exact 12px cell advances to avoid the fractional-pixel seams seen in earlier previews. All PNG/GIF captures enable this mode using the bundled font; `->`, `::` and `//` are shaped with `calt` separately.
