@@ -48,7 +48,7 @@ func parseWindowsCPUHardware(data []byte) (CPUHardware, error) {
 	if len(r.Power.Sensors) > 0 {
 		r.Power.Problems = nil
 	} else {
-		r.Power.Problems = append(r.Power.Problems, "No CPU Power sensors returned. On Windows use --setup-sensors, then --sensors-admin.")
+		r.Power.Problems = append(r.Power.Problems, "No CPU Power sensors returned. An accessible hardware-sensor provider is required.")
 	}
 	return r, nil
 }

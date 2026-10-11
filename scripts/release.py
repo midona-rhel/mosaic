@@ -63,7 +63,7 @@ These binaries are unsigned. macOS binaries are not notarized.
                 if path.is_file():
                     output.write(path, 'sensors/' + path.relative_to(helper).as_posix())
             output.write(ROOT / 'docs/windows-sensors.md', 'docs/windows-sensors.md')
-            instructions += "\nCPU sensors: run .\\mosaic.exe --setup-sensors once (downloads the verified driver installer).\nThen run .\\mosaic.exe --sensors-admin for full sensor access. Both use Windows UAC.\nKeep the sensors folder next to mosaic.exe; no separate .NET installation is needed.\n"
+            instructions += "\nKeep the sensors folder next to mosaic.exe. Its runtime is included.\nNo sensor driver is installed. GPU sensors use existing vendor drivers;\nCPU temperature/power need an already available hardware-sensor provider.\n"
         output.writestr('RUN.txt', instructions)
     with zipfile.ZipFile(archive) as output:
         if output.testzip() is not None or output.read(executable) != binary.read_bytes():

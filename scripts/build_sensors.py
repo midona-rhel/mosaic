@@ -22,6 +22,7 @@ def build(arch, output):
         raise RuntimeError('Self-contained helper publication is incomplete')
     licenses = output / 'licenses'
     shutil.copytree(ROOT / 'windows/licenses', licenses, dirs_exist_ok=True)
+    shutil.copytree(ROOT / 'windows/sources', licenses / 'sources', dirs_exist_ok=True)
     # Include exact dependency metadata, embedded license files and source URLs.
     assets = json.loads((PROJECT.parent / 'obj/project.assets.json').read_text())
     package_roots = list(assets['packageFolders'])

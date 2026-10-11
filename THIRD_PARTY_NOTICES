@@ -125,5 +125,5 @@ Windows releases bundle unmodified LibreHardwareMonitorLib 0.9.6 (MPL-2.0),
 its dependencies and the .NET runtime. See windows/licenses in source and
 sensors/licenses in the Windows ZIP for licenses, dependency metadata and
 source URLs. Corresponding LHM source: https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/tree/v0.9.6
-Setup obtains the pinned PawnIO installer directly from upstream with SHA-256
-verification. The installer is not redistributed in Mosaic packages.
+Corresponding embedded PawnIO.Modules 0.2.2 source is included in
+windows/sources and sensors/licenses/sources. Mosaic ships no driver installer.

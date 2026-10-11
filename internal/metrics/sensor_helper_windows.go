@@ -54,19 +54,6 @@ func WaitSensors(ctx context.Context) {
 		}
 	}
 }
-func SetupSensors(ctx context.Context) error {
-	path, err := sensorHelperPath()
-	if err != nil {
-		return err
-	}
-	cmd := exec.CommandContext(ctx, path, "--setup")
-	cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
-	if err = cmd.Run(); err != nil {
-		return fmt.Errorf("sensor setup: %w", err)
-	}
-	fmt.Println("Sensor driver setup finished. Run mosaic --sensors-admin for CPU temperature and power.")
-	return nil
-}
 
 // Elevation is an explicit launch option, never a side effect of collecting data.
 func ElevateSensors() (bool, error) {

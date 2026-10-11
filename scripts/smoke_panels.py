@@ -16,6 +16,10 @@ def pump(seconds=.22):
    if b'\x1b[6n' in data:os.write(master,b'\x1b[1;1R')
 def text():return '\n'.join(screen.display)
 def key(b):os.write(master,b);pump()
+def wait_for(predicate, timeout=5):
+ end=time.monotonic()+timeout
+ while not predicate() and time.monotonic()<end:pump(.05)
+ assert predicate(), text()
 def capture(name,caption):
  if os.getenv('MOSAIC_CAPTURE_PANELS')=='1':
   from terminal_render import render_screen
@@ -30,7 +34,7 @@ try:
  key(b'9');key(b' ')
  assert any('9 Battery' in row and 'Hidden' in row for row in screen.display), 'enabling changed priority'
  key(b'\r') # Explicitly bring first; enabling alone preserves its saved slot.
- assert '9 BATTERY' in screen.display[3] and '78%' in text()
+ wait_for(lambda: '9 BATTERY' in screen.display[3] and '78%' in text())
  capture('battery-card-fira.png','Battery explicitly moved first / toggling preserves priority')
  key(b'o');key(b'\x1b[1;2B')
  key(b'\x1b')

@@ -172,9 +172,9 @@ Added after the feature-completeness audit identified this missing metric. Readi
 | Linux x64/ARM64 | Reads CPU hwmon `temp*_input`, `_label`, `_crit`, `_fault`, `_enable`; explicitly named CPU thermal zones as fallback. [Linux sysfs ABI](https://docs.kernel.org/hwmon/sysfs-interface.html), [coretemp](https://docs.kernel.org/hwmon/coretemp.html), [k10temp](https://docs.kernel.org/hwmon/k10temp.html), [k8temp](https://docs.kernel.org/hwmon/k8temp.html) | Drivers and readable sensors are required; VMs/containers often expose none. Generic ACPI, motherboard, NVMe and GPU sensors are excluded. |
 | Intel macOS | Pinned [gopsutil SMC reader](https://github.com/shirou/gopsutil/blob/v4.26.9/sensors/sensors_darwin.go); selects CPU diode `TC0D` | Proximity/heatsink keys are not die readings. The upstream backend returns zero on failed reads, so zero is conservatively omitted. |
 | Apple Silicon macOS | Pinned [gopsutil IOHID reader](https://github.com/shirou/gopsutil/blob/v4.26.9/sensors/sensors_darwin_arm64.go); explicitly CPU-named sensors and `pACC`/`eACC MTR Temp Sensor` families | Private/model-dependent interfaces; no guarantee on every macOS/Mac. The CPU/GPU/SoC distinction matches [Stats’ HID sensor map](https://github.com/exelban/stats/blob/master/Modules/Sensors/values.swift). |
-| Windows x64/ARM64 | Queries `root/LibreHardwareMonitor` then `root/OpenHardwareMonitor` through native WMI/COM; joins Sensor.Parent to Hardware.Identifier where HardwareType is Cpu | Requires a running compatible WMI provider and functioning sensor driver. Windows ARM64 driver support may be absent. No installation, driver loading or privilege elevation is performed. |
+| Windows x64/ARM64 | Bundled LHM 0.9.6 library helper; legacy `root/LibreHardwareMonitor` / `root/OpenHardwareMonitor` WMI fallback | CPU hardware access requires PawnIO and an elevated launch. No driver is installed; elevation is an explicit launch option. see [Windows setup](windows-sensors.md). ARM64 sensor/driver support depends on the device. |
 
-The Windows adapter was checked against Libre Hardware Monitor **v0.9.4** [Sensor.cs](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.4/LibreHardwareMonitor/WMI/Sensor.cs), [Hardware.cs](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.4/LibreHardwareMonitor/WMI/Hardware.cs) and [WmiProvider.cs](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.4/LibreHardwareMonitor/WMI/WmiProvider.cs). This specifies a WMI interface, not blanket compatibility with every later build. Newer builds that do not publish this interface will report unavailable. `Sensor.Max` is a historical maximum, not a thermal limit, and is deliberately not used as a critical threshold. These references are not vendored. The upstream WMI provider serializes null as zero; the adapter conservatively rejects zero/missing/non-finite/out-of-range readings.
+The legacy WMI fallback was checked against Libre Hardware Monitor **v0.9.4** [Sensor.cs](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.4/LibreHardwareMonitor/WMI/Sensor.cs), [Hardware.cs](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.4/LibreHardwareMonitor/WMI/Hardware.cs) and [WmiProvider.cs](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/blob/v0.9.4/LibreHardwareMonitor/WMI/WmiProvider.cs). This specifies a WMI interface, not blanket compatibility with every later build. Newer builds that do not publish this interface will report unavailable. `Sensor.Max` is a historical maximum, not a thermal limit, and is deliberately not used as a critical threshold. These references are not vendored. The upstream WMI provider serializes null as zero; the adapter conservatively rejects zero/missing/non-finite/out-of-range readings.
 
 Linux readings are converted from millidegrees Celsius. Recognized hwmon devices retain distinct paths so multi-socket/core sensors do not collapse into a single name. Faulted/disabled channels are omitted. Thermal fallback is considered when no usable CPU hwmon values exist, even if unrelated GPU/disk hwmon entries are present. CPU-only classification avoids silently presenting a motherboard or chassis temperature as CPU temperature.
 
@@ -189,7 +189,7 @@ Tests cover units, sensor selection, fault flags, device-subdirectory layouts, G
 | Platform | Implemented power source | Availability and semantics |
 | --- | --- | --- |
 | Linux x64/ARM64 | Read-only powercap RAPL `energy_uj` deltas divided by monotonic elapsed time, with class/device aliases deduplicated | Requires a kernel/CPU exposing readable RAPL domains. Package roots contribute to the headline; cores, uncore, DRAM and platform domains are listed separately and never added to packages. ARM devices without RAPL report unavailable. |
-| Windows x64/ARM64 | Bundled LHM 0.9.6 CPU `Power` sensors; existing LHM/OHM WMI fallback | Same bounded, two-second native WMI query as CPU temperatures, refreshed every five seconds. Direct helper requires PawnIO and administrator access; explicit setup/launch flags are documented in windows-sensors.md. ARM64 support is provider-dependent. Package sensors are distinct from cores, graphics, memory and platform power. |
+| Windows x64/ARM64 | Bundled LHM 0.9.6 CPU `Power` sensors; existing LHM/OHM WMI fallback | Direct helper samples in a separate process every five seconds with bounded I/O; the legacy WMI fallback has a two-second caller deadline. Direct helper requires PawnIO and administrator access; the optional elevated-launch flag is documented in windows-sensors.md. ARM64 support is provider-dependent. Package sensors are distinct from cores, graphics, memory and platform power. |
 | Intel / Apple Silicon macOS | Native, read-only AppleSMC package keys `PCPC`, `PCPT`, `PCPR`, in that priority order | Alternative keys, never summed. The reader uses IOKit via purego and does not need CGO or launch sudo. Recognized keys depend on Mac model/macOS version; many Apple Silicon configurations may return unavailable. This is not an IOReport/powermetrics backend. |
 
 Linux power samples are interval averages, not instantaneous measurements. The first sample, counter decrease (wrap or reset), changed counter range, and recovery after a failed read all rebaseline rather than fabricate spikes. Missing devices discard their baselines. Incomplete package readings never become a partial total. `constraint_*_power_limit_uw` and `constraint_*_time_window_us` are shown as **configured limits**, with their names and windows, never as actual consumption or rated TDP. This code never writes to powercap.
@@ -303,14 +303,11 @@ compact card shows remaining/full; the design ratio remains in details.
 
 ## Windows setup and adapter identity
 
-CPU load uses Windows processor time counters and does not require a helper.
-CPU die temperature and package power require a hardware sensor driver. Mosaic
-reads the existing `root/LibreHardwareMonitor` or `root/OpenHardwareMonitor` WMI
-provider directly, without launching PowerShell. On a Ryzen 7 5800X3D, use a
-compatible Libre Hardware Monitor build with CPU monitoring enabled, run it
-with the privileges its driver requires, and leave it running. Confirm that
-CPU temperature and CPU Package power appear there. Mosaic cannot obtain those
-readings from ordinary Windows CPU-load counters alone.
+CPU load uses Windows processor time counters. CPU die temperature and package
+power use the bundled LHM 0.9.6 sensor helper with an existing PawnIO driver and
+administrator access. Mosaic installs no driver. The driver must already be available; `--sensors-admin` requests elevation if needed;
+see [setup and diagnostics](windows-sensors.md). Older WMI providers remain a
+fallback. Real 5800X3D readings still require hardware verification.
 
 WDDM GPU engine and memory counters are queried through native WMI. DXGI adapter
 LUIDs map counter groups to their actual AMD/NVIDIA/Intel device names and

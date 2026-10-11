@@ -39,7 +39,6 @@ func run() error {
 	meters := flag.String("meters", "", "Use and remember fira or portable meters (default: environment, saved preference, then portable)")
 	readOnly := flag.Bool("read-only", false, "Disable process termination")
 	snapshot := flag.Bool("snapshot", false, "Print one dashboard and exit")
-	setupSensors := flag.Bool("setup-sensors", false, "Install or repair the Windows sensor driver (explicit UAC setup)")
 	sensorsAdmin := flag.Bool("sensors-admin", false, "Launch Mosaic with Windows administrator sensor access")
 	cpuDiagnostics := flag.Bool("cpu-diagnostics", false, "Print CPU-only sensor diagnostics as JSON and exit")
 	gpuDiagnostics := flag.Bool("gpu-diagnostics", false, "Print GPU counters and temperature sources as JSON and exit")
@@ -92,12 +91,6 @@ func run() error {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 	defer metrics.CloseSensors()
-	if *setupSensors {
-		if modes > 0 || *sensorsAdmin || *demo {
-			return fmt.Errorf("use --setup-sensors by itself")
-		}
-		return metrics.SetupSensors(ctx)
-	}
 	if *sensorsAdmin {
 		launched, err := metrics.ElevateSensors()
 		if err != nil || launched {

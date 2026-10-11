@@ -79,7 +79,7 @@ func (c *Collector) platformCPUThermal(ctx context.Context) CPUThermalReport {
 		return CPUThermalReport{Problems: []string{err.Error()}}
 	}
 	if len(r.Sensors) == 0 {
-		r.Problems = append(r.Problems, "CPU sensors need the bundled helper, PawnIO driver and administrator access. Use --setup-sensors, then --sensors-admin.")
+		r.Problems = append(r.Problems, "No accessible CPU sensor readings. The portable build can use an existing driver or legacy hardware-monitor provider.")
 	}
 	return r
 }
