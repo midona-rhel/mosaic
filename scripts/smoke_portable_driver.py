@@ -73,3 +73,26 @@ try:
 finally:
     image.write_bytes(original)
 print('Modified driver rejected before loading', flush=True)
+
+# Simulate an existing provider. Mosaic must borrow, not replace/stop it.
+external = 'MosaicTestExternalPawnIO'
+created = False
+try:
+    subprocess.run(['sc.exe', 'create', external, 'type=', 'kernel', 'start=', 'demand',
+                    'binPath=', str(image)], check=True, capture_output=True)
+    created = True
+    subprocess.run(['sc.exe', 'start', external], check=True, capture_output=True)
+    result = subprocess.run([str(HELPER), '--once'], capture_output=True, text=True, timeout=30)
+    report = json.loads(result.stdout)
+    assert report['DriverMode'] == 'existing' and report['DriverAccessible'], report
+    assert service_absent(), 'Borrowing a provider created a competing service'
+    # Ask the SCM for numeric state rather than depending on localized text.
+    state = subprocess.run(['powershell.exe', '-NoProfile', '-Command',
+                            f'(Get-Service {external}).Status.value__'],
+                           capture_output=True, text=True, check=True)
+    assert state.stdout.strip() == '4', state.stdout
+    print('Existing provider left running and unchanged', flush=True)
+finally:
+    if created:
+        subprocess.run(['sc.exe', 'stop', external], capture_output=True)
+        subprocess.run(['sc.exe', 'delete', external], capture_output=True)

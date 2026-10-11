@@ -127,3 +127,12 @@ sensors/licenses in the Windows ZIP for licenses, dependency metadata and
 source URLs. Corresponding LHM source: https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/tree/v0.9.6
 Corresponding embedded PawnIO.Modules 0.2.2 source is included in
 windows/sources and sensors/licenses/sources. Mosaic ships no driver installer.
+
+## PawnIO session driver 2.1.0
+
+Unmodified official signed x64/ARM64 driver images are distributed under
+GPL-2.0-or-later with the upstream IOCTL linking exception. The corresponding
+source, including its PawnPP submodule, is in
+`windows/sources/PawnIO-2.1.0-source.zip`; licenses and the exception are under
+`windows/licenses`. Release ZIPs include these under `sensors/licenses`.
+Provenance and exact hashes: `windows/drivers/README.md`.

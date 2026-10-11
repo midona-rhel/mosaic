@@ -6,7 +6,8 @@ Extract the **whole Windows ZIP**, keeping `sensors` beside `mosaic.exe`, and ru
 .\mosaic.exe
 ```
 
-For CPU temperature and power, approve Windows elevation:
+For CPU temperature and power, open **Mosaic.cmd** and approve Windows elevation.
+From an existing terminal, the equivalent command is:
 
 ```powershell
 .\mosaic.exe --sensors-admin

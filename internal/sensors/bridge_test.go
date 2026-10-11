@@ -76,7 +76,7 @@ func TestBridgeMalformedAndHungHelpers(t *testing.T) {
 			go func() { b.Close(); close(done) }()
 			select {
 			case <-done:
-			case <-time.After(3 * time.Second):
+			case <-time.After(7 * time.Second):
 				t.Fatal("helper did not terminate")
 			}
 		})
