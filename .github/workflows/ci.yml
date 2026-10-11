@@ -19,6 +19,8 @@ jobs:
           cache: true
       - run: go test -race ./...
       - run: go vet ./...
+      - name: Drag frame benchmarks
+        run: go test ./internal/ui -run "^$" -bench "^BenchmarkDragFrame$" -benchmem -count=1
       - run: go build -trimpath -o bin/mosaic ./cmd/mosaic
         if: runner.os != 'Windows'
       - name: Build from PowerShell

@@ -82,3 +82,22 @@ Fira Code meters need the corresponding font glyphs. Use `--meters portable` wit
 other fonts, `--no-terminal-effects` when terminal-specific pointer/background
 controls are unwanted, and `--snapshot` or `--json` outside an interactive console.
 See [terminals.md](terminals.md) for supported environments and fallbacks.
+
+## Drag rendering
+
+`go test ./internal/ui -run '^$' -bench '^BenchmarkDragFrame$' -benchmem`
+measures a complete painted frame for every mouse position, rather than
+amortizing one frame across a burst of input events. CI runs this on all three
+native operating systems. The Windows ConPTY smoke also sends 60 mouse motions
+per second, checks intermediate positions, and verifies the final placement.
+
+Dragging retains unchanged panel text and decoded cells. Data samples, keyboard
+input, release, cancellation and terminal resizing invalidate the retained
+content. Tests compare cached frames against fresh renders while moving,
+resizing and updating live data. Frame scheduling uses the remaining frame
+budget instead of adding a full timer delay after every motion burst.
+
+On the Linux development VM, 160×45 drag-frame work fell from 12.7 ms / 3.4 MB
+allocated to 3.9 ms / 1.4 MB. These are model rendering measurements, not a claim
+about end-to-end latency on the reported Windows desktop. Terminal output and
+the terminal application's own rendering add further cost.

@@ -71,3 +71,26 @@ func BenchmarkFloatingWindowDrag(b *testing.B) {
 		p.View()
 	}
 }
+
+// One position and one painted frame per iteration: unlike the event-burst
+// benchmark, this measures the actual cost of keeping up with a drag.
+func BenchmarkDragFrame(b *testing.B) {
+	for _, size := range [][2]int{{120, 30}, {160, 45}, {240, 70}} {
+		b.Run(fmt.Sprintf("%dx%d", size[0], size[1]), func(b *testing.B) {
+			m := testModel()
+			m.SetSize(size[0], size[1])
+			m.floatPanel(1)
+			p := WithMousePointer(m).(*pointerModel)
+			r := m.windows[0].Bounds
+			p.Update(mouse(r.X+3, r.Y+1))
+			p.View()
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				p.Update(tea.MouseMotionMsg{X: r.X + 3 + i%20, Y: r.Y + 1 + i%5, Button: tea.MouseLeft})
+				p.Update(dragFrameMsg(p.frameGeneration))
+				p.View()
+			}
+		})
+	}
+}

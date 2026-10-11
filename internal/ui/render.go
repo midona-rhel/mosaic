@@ -26,12 +26,12 @@ func (m *Model) View() tea.View {
 func (m *Model) render() string {
 	w, h := m.width, m.height
 	canvas := lipgloss.NewCanvas(w, h)
-	base := lipgloss.NewStyle().Background(background).Render(fixedBlock(nil, w, h))
+	base := m.dragContent("base", w, h, func() string { return lipgloss.NewStyle().Background(background).Render(fixedBlock(nil, w, h)) })
 	layers := []*lipgloss.Layer{lipgloss.NewLayer(base)}
 	if w < 24 || h < 10 {
 		lines := []string{strong.Render("MOSAIC"), "", dim.Render("Resize to at least 24×10"), dim.Render("q quit · Ctrl+C quit")}
 		layers = append(layers, lipgloss.NewLayer(fixedBlock(lines, w, h)).Z(1))
-		canvas.Compose(lipgloss.NewCompositor(layers...))
+		m.compose(canvas, layers)
 		return m.finishCanvas(canvas)
 	}
 	if !m.expanded || m.kind(m.selected) == 0 {
@@ -48,7 +48,7 @@ func (m *Model) render() string {
 			if i == m.selected {
 				color = "#B45CFF"
 			}
-			layers = append(layers, lipgloss.NewLayer(box(m.cardLines(i, r.W-4, r.H-2), r.W, r.H, color)).X(r.X).Y(r.Y).Z(1).ID(fmt.Sprintf("card-%d", i)))
+			layers = append(layers, lipgloss.NewLayer(m.dragContent(fmt.Sprintf("card-%d", i), r.W, r.H, func() string { return box(m.cardLines(i, r.W-4, r.H-2), r.W, r.H, color) })).X(r.X).Y(r.Y).Z(1).ID(fmt.Sprintf("card-%d", i)))
 		}
 		layers = append(layers, m.floatingLayers()...)
 	}
@@ -125,7 +125,7 @@ func (m *Model) render() string {
 		}
 		layers = append(layers, ls...)
 	}
-	canvas.Compose(lipgloss.NewCompositor(layers...))
+	m.compose(canvas, layers)
 	return m.finishCanvas(canvas)
 }
 

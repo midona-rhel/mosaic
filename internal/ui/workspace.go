@@ -161,7 +161,7 @@ func (m *Model) control(a action) string {
 		c = red
 		bg = lipgloss.Color("#3C2031")
 	}
-	if !m.opts.NoMouse && a.Rect.Contains(m.mouseX, m.mouseY) && a.HoverOwner != "" && a.HoverOwner == m.hoverOwnerAt(m.mouseX, m.mouseY) {
+	if m.drag == nil && !m.opts.NoMouse && a.Rect.Contains(m.mouseX, m.mouseY) && a.HoverOwner != "" && a.HoverOwner == m.hoverOwnerAt(m.mouseX, m.mouseY) {
 		c = ink
 		bg = lipgloss.Color("#503575")
 		if a.Danger {

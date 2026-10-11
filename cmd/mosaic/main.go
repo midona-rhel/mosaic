@@ -169,7 +169,7 @@ func run() error {
 			return err
 		}
 	}
-	programOptions := []tea.ProgramOption{tea.WithContext(ctx), tea.WithFPS(30)}
+	programOptions := []tea.ProgramOption{tea.WithContext(ctx), tea.WithFPS(60)}
 	if *color {
 		programOptions = append(programOptions, tea.WithColorProfile(colorprofile.TrueColor))
 	}

@@ -383,7 +383,7 @@ func (m *Model) floatingLayers() []*lipgloss.Layer {
 			color = "#B45CFF"
 		}
 		z := 3 + i*2
-		content := box(m.windowLines(w), r.W, r.H, color)
+		content := m.dragContent(fmt.Sprintf("window-%d", w.Panel), r.W, r.H, func() string { return box(m.windowLines(w), r.W, r.H, color) })
 		layers = append(layers, lipgloss.NewLayer(content).X(r.X).Y(r.Y).Z(z+1).ID(fmt.Sprintf("window-%d", w.Panel)))
 	}
 	return layers

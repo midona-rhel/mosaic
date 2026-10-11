@@ -64,6 +64,7 @@ type pointerModel struct {
 	valid           bool
 	framePending    bool
 	frameGeneration uint64
+	lastFrame       time.Time
 }
 
 type dragFrameMsg uint64
@@ -71,6 +72,7 @@ type dragFrameMsg uint64
 func (p *pointerModel) View() tea.View {
 	if !p.valid {
 		p.view, p.valid = p.Model.View(), true
+		p.lastFrame = time.Now()
 	}
 	return p.view
 }
@@ -145,9 +147,14 @@ func (p *pointerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if motion && hadDrag && p.drag != nil && p.valid {
 		var frame tea.Cmd
 		if !p.framePending && dragBefore != *p.drag {
-			p.framePending = true
-			generation := p.frameGeneration
-			frame = tea.Tick(time.Second/30, func(time.Time) tea.Msg { return dragFrameMsg(generation) })
+			remaining := time.Until(p.lastFrame.Add(time.Second / 60))
+			if remaining <= 0 {
+				p.valid = false
+			} else {
+				p.framePending = true
+				generation := p.frameGeneration
+				frame = tea.Tick(remaining, func(time.Time) tea.Msg { return dragFrameMsg(generation) })
+			}
 		}
 		return p, tea.Batch(cmd, frame, p.syncPointer())
 	}

@@ -65,6 +65,52 @@ def run():
         read_until(marker)
         time.sleep(0.12)  # Disambiguate standalone Escape.
 
+    def drag_window():
+        def title_position():
+            for y, row in enumerate(screen.display):
+                if ":: CPU" in row:
+                    return row.index(":: CPU"), y
+            return None
+
+        resize(160, 45)
+        read_until(":: CPU")
+        # Drain the resize frame before taking coordinates.
+        deadline = time.monotonic() + 0.3
+        while time.monotonic() < deadline:
+            try:
+                feed(chunks.get(timeout=0.02))
+            except queue.Empty:
+                pass
+        x, y = title_position()
+
+        def mouse(button, dx=0, release=False):
+            send(f"\x1b[<{button};{x + dx + 1};{y + 1}{'m' if release else 'M'}".encode())
+
+        mouse(0)
+        positions = set()
+        started = time.monotonic()
+        for step in range(60):
+            mouse(32, 1 + step % 15)
+            deadline = started + (step + 1) / 60
+            while time.monotonic() < deadline:
+                try:
+                    feed(chunks.get(timeout=0.002))
+                    positions.add(title_position())
+                except queue.Empty:
+                    pass
+        mouse(0, 15, release=True)
+        released = time.monotonic()
+        deadline = released + 2
+        while title_position() != (x + 15, y) and time.monotonic() < deadline:
+            try:
+                feed(chunks.get(timeout=0.02))
+            except queue.Empty:
+                pass
+        assert title_position() == (x + 15, y), "drag did not reach the final mouse position"
+        assert len(positions - {None}) >= 4, "drag did not paint intermediate positions"
+        print(f"ConPTY drag: {len(positions - {None})} positions; "
+              f"release-to-final-frame {(time.monotonic() - released) * 1000:.0f} ms")
+
     def resize(width, height):
         screen.resize(lines=height, columns=width)
         process.setwinsize(height, width)
@@ -110,6 +156,7 @@ def run():
         action(b"\x1b[<0;44;5M\x1b[<0;44;5m", "› 2 CPU")
         action(b"\r", "Total utilization")
         action(b"f", ":: CPU")
+        drag_window()
         action(b"d", "SYSTEM")
         resize(120, 30)
         read_until("10 CPUs")

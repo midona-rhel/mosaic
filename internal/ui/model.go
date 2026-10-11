@@ -7,6 +7,7 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/midona-rhel/mosaic/internal/metrics"
 )
 
@@ -34,6 +35,8 @@ type terminateMsg struct {
 }
 
 type Model struct {
+	dragPaint                                                   map[string]dragPaintEntry
+	dragCells                                                   map[string]*lipgloss.Canvas
 	meterPreference                                             string
 	ctx                                                         context.Context
 	collector                                                   *metrics.Collector
@@ -114,6 +117,8 @@ func New(ctx context.Context, opts Options) *Model {
 	return m
 }
 func (m *Model) SetSize(w, h int) {
+	m.dragPaint = nil
+	m.dragCells = nil
 	m.width = max(1, w)
 	m.height = max(1, h)
 	m.drag = nil
@@ -130,8 +135,12 @@ func (m *Model) SetSize(w, h int) {
 	}
 	m.clampOffsets()
 }
-func (m *Model) SetSnapshot(s metrics.Snapshot) { m.accept(s) }
-func (m *Model) Init() tea.Cmd                  { return m.sample() }
+func (m *Model) SetSnapshot(s metrics.Snapshot) {
+	m.dragPaint = nil
+	m.dragCells = nil
+	m.accept(s)
+}
+func (m *Model) Init() tea.Cmd { return m.sample() }
 func (m *Model) sample() tea.Cmd {
 	if m.busy {
 		return nil
@@ -168,6 +177,10 @@ func (m *Model) tick() tea.Cmd {
 	return tea.Tick(m.opts.Interval, func(time.Time) tea.Msg { return tickMsg{generation} })
 }
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if _, motion := msg.(tea.MouseMotionMsg); !motion {
+		m.dragPaint = nil
+		m.dragCells = nil
+	}
 	switch v := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.SetSize(v.Width, v.Height)
