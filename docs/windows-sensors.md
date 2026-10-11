@@ -6,9 +6,22 @@ Extract the **whole Windows ZIP**, keeping `sensors` beside `mosaic.exe`, and ru
 .\mosaic.exe
 ```
 
-The helper and its .NET runtime are included. Mosaic does not download or install
-sensor drivers, register a service, or need a separate hardware-monitor
-application for GPU readings. No setup command or installer is included.
+For CPU temperature and power, approve Windows elevation:
+
+```powershell
+.\mosaic.exe --sensors-admin
+```
+
+The helper, .NET runtime and signed sensor driver are included. No separate
+installer, download or hardware-monitor application is needed. GPU driver APIs
+work without elevation where the vendor permits it.
+
+An elevated session can load the bundled signed PawnIO 2.1 driver using a
+**temporary, demand-start kernel service**. This is driver loading, not a
+driver-free implementation. It does not add an application installation,
+Driver Store package or boot-start service. The last Mosaic reader normally
+stops the driver and removes its service and private image on exit. Existing
+third-party PawnIO services are borrowed and never changed or stopped.
 
 The helper uses unmodified **LibreHardwareMonitorLib 0.9.6**, sampling in a separate
 process every five seconds. It stays running between samples and communicates
@@ -32,33 +45,30 @@ backend coverage, not physical testing of every adapter or driver version.
 Only unambiguous adapter names are merged. Identical devices are kept separate
 rather than assigning one GPU's temperature to another.
 
-## CPU readings and the portability limit
+## CPU readings
 
-CPU utilization uses Windows counters and needs no sensor helper or driver.
+CPU utilization uses Windows counters. AMD temperature/package power use Libre's
+SMN and MSR readers; Intel uses its DTS and RAPL readers. Intel distance-to-TjMax
+margins are excluded from actual temperatures.
 
-Both **AMD and Intel CPU temperature/package power** need kernel access in
-Libre. Ryzen uses SMN temperature registers and MSR energy counters; Intel uses
-DTS thermal-status MSRs and RAPL energy counters. Intel's distance-to-TjMax
-readings are margins and are excluded from actual temperatures. Its current implementation
-uses PawnIO. Mosaic can use an **already available, accessible** PawnIO driver, or
-fall back to an already-running legacy LHM/OHM WMI sensor provider. It does not
-install either. With no accessible provider, these readings remain unavailable.
+The bundled session driver provides the kernel access those readers need.
+No preinstalled PawnIO is required. Windows 10 2004 or newer is required for this
+bundled backend. Driver loading requires elevation and remains subject to Windows
+code integrity and organizational policy; Mosaic never disables either.
+Hardware support still depends on the pinned Libre library. ARM64 driver loading
+does not imply that Libre implements every ARM CPU sensor protocol.
 
-If PawnIO is already present but access is denied, launch from an elevated
-terminal, or explicitly request an elevated Mosaic window:
+Mosaic pins PawnIO **2.1.0** because it supports direct demand-start loading.
+PawnIO 2.2 changed to Plug and Play registration. Both bundled 2.1 driver images
+carry Microsoft hardware signatures; exact SHA-256 hashes are checked before
+loading. The image is copied into a fresh directory accessible only to
+administrators and SYSTEM. WinRing0 is not used.
 
-```powershell
-.\mosaic.exe --sensors-admin
-```
-
-This uses Windows UAC and elevates Mosaic and its child helper for that session;
-it installs nothing. Ordinary launches never request elevation.
-
-Older Libre Hardware Monitor releases loaded WinRing0 temporarily. That driver
-has known security issues and is blocked on many current Windows systems. Mosaic
-does not bundle it or ask users to disable Windows protections. The current LHM
-maintainers confirm that their new CPU backend is not fully portable without an
-existing driver: [upstream discussion](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/issues/2140).
+Normal EOF shutdown releases the library before unloading. Another active reader
+can keep the driver in use; Mosaic does not force unloading. If the helper is
+forcibly killed, its demand-start service may remain until a subsequent Mosaic
+session cleans it up or Windows restarts (restarting unloads the driver but can
+leave metadata/files for the next session to remove).
 
 AMD ADLX's public system-metrics interfaces expose CPU usage and SmartShift power
 distribution, not general Ryzen die-temperature/package-watt readings. These are
@@ -71,12 +81,12 @@ not substitutes for the missing sensor values.
 .\mosaic.exe --gpu-diagnostics
 ```
 
-`SensorBackend` reports helper protocol, existing driver access, Windows error
+`SensorBackend` reports helper protocol, driver mode/access, Windows error
 code, sample time and raw named sensors. Error 5 means access was denied. If the
 helper is missing, extract the complete ZIP again.
 
-Native Windows tests cover self-contained startup, repeated samples, absence of
-a CPU driver, collector integration and helper cleanup. Physical AMD/Intel CPU and AMD/NVIDIA/Intel GPU readings still need comparison
+Native Windows tests exercise signature verification, temporary driver loading,
+concurrent readers, cleanup, checksum rejection and collector integration. Physical AMD/Intel CPU and AMD/NVIDIA/Intel GPU readings still need comparison
 on actual hardware. The helper is built for
 Windows x64 and ARM64; sensor availability depends on hardware and driver APIs.
 
@@ -97,7 +107,9 @@ The library is unmodified and licensed under MPL-2.0. Corresponding LHM source i
 at the pinned tag (NuGet commit `3d331e3370efb858411f19511373eff65a218701`).
 The ZIP includes licenses, runtime notices, dependency metadata/source URLs,
 corresponding PawnIO.Modules 0.2.2 source and the NuGet lock file in
-`sensors/licenses`. The embedded modules are used only with an existing driver.
+`sensors/licenses`. The driver source (including PawnPP), license and linking exception are also
+included. The modules run against either the bundled session driver or an
+existing accessible PawnIO driver.
 
 Build with the .NET 10 SDK:
 

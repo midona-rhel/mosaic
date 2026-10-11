@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the bundled helper on Windows without installing or elevating a driver."""
+"""Check the bundled helper on Windows with its normal session-driver lifecycle."""
 import json
 import os
 from pathlib import Path

@@ -34,6 +34,16 @@ jobs:
       - name: Build bundled sensors
         if: runner.os == 'Windows'
         run: python scripts/build_sensors.py --arch amd64 --output bin/sensors
+      - name: Portable driver signature and lifecycle
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          foreach ($image in Get-ChildItem windows/drivers/*/PawnIO.sys) {
+            $signature = Get-AuthenticodeSignature $image.FullName
+            if ($signature.Status -ne 'Valid') { throw "Invalid driver signature: $($image.FullName): $($signature.Status)" }
+          }
+          python scripts/smoke_portable_driver.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: PowerShell 7 smoke
         if: runner.os == 'Windows'
         shell: pwsh

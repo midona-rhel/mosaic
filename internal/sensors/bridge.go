@@ -1,5 +1,5 @@
 // Package sensors runs the optional bundled hardware helper outside the UI and
-// collector threads. It keeps one process warm and never installs a driver.
+// collector threads. It keeps one process warm while the helper manages its optional session driver.
 package sensors
 
 import (
@@ -21,7 +21,7 @@ type Report struct {
 	Protocol                          int
 	At                                time.Time
 	DriverInstalled, DriverAccessible bool
-	DriverVersion                     string
+	DriverVersion, DriverMode         string
 	DriverError                       int
 	Sensors                           []Sensor
 	Problems                          []string
@@ -104,7 +104,7 @@ func (b *Bridge) session(ctx context.Context) error {
 		go func() { exited <- cmd.Wait() }()
 		select {
 		case <-exited:
-		case <-time.After(time.Second):
+		case <-time.After(5 * time.Second):
 			cancel()
 			<-exited
 		}

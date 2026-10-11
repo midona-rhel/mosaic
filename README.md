@@ -46,15 +46,14 @@ The optional `scripts/build.ps1` builds the same binary without Make or Bash. Ru
 
 ## Windows hardware sensors
 
-Windows releases include a self-contained Libre Hardware Monitor sensor helper.
-Keep the `sensors` folder beside `mosaic.exe`; extract and run as usual. No separate
-.NET runtime, sensor installer or background service is required.
-
-GPU sensors use the existing graphics driver where supported. CPU temperature
-and package power still require accessible kernel sensor data: Mosaic can read
-an existing PawnIO or legacy WMI provider, but installs no driver. If an existing
-driver requires administrator access, `--sensors-admin` explicitly launches an
-elevated Mosaic window. See [Windows sensor sources and portability limits](docs/windows-sensors.md).
+Windows releases include Libre Hardware Monitor, its runtime, and a signed sensor
+driver. Keep the `sensors` folder beside `mosaic.exe`. For CPU temperature and
+package watts, run `mosaic.exe --sensors-admin` and approve Windows elevation.
+No separate installer or preinstalled PawnIO is required. The driver uses a
+temporary demand-start service that is removed on normal final-reader exit;
+existing third-party drivers are left alone. GPU vendor APIs also work in
+ordinary sessions where supported. See [Windows sensors](docs/windows-sensors.md)
+for hardware support and cleanup details.
 
 ## Terminals and fallback controls
 
@@ -139,7 +138,7 @@ The CPU card and its expanded/pop-out view show temperature in °C, including in
 
 - **Linux:** kernel hwmon CPU drivers (Intel coretemp, AMD k10temp/k8temp/zenpower), with explicitly named CPU thermal zones as fallback. Requires the driver to expose readable sensors.
 - **macOS:** the pinned gopsutil AppleSMC backend for Intel CPU diode readings and IOHID CPU sensor readings on Apple Silicon. Availability depends on hardware, macOS and permissions.
-- **Windows:** the bundled Libre Hardware Monitor library helper reads CPU sensors using PawnIO. Mosaic installs no driver; `--sensors-admin` can elevate the session to access an existing driver. Legacy WMI providers remain a fallback. See [setup](docs/windows-sensors.md).
+- **Windows:** the bundled Libre Hardware Monitor helper reads CPU sensors through a signed session driver; `--sensors-admin` enables it with Windows elevation. No separate installer is required. Legacy WMI providers remain a fallback. See [setup](docs/windows-sensors.md).
 
 No reading is displayed as **Unavailable**, with the reason in CPU details. Demo readings remain labeled demo. Windows/macOS temperature providers have cross-build and parser coverage; native hardware validation remains pending. See the [source audit](docs/telemetry.md#cpu-temperature).
 

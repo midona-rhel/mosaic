@@ -10,25 +10,24 @@ Console.OutputEncoding = new UTF8Encoding(false);
 if (!args.SequenceEqual(new[] { "--stdio" }) && !args.SequenceEqual(new[] { "--once" }))
 { Console.Error.WriteLine("Use --stdio or --once."); return 2; }
 
+using var driverSession = DriverSession.Open();
 var computer = new Computer { IsCpuEnabled = true, IsGpuEnabled = true };
 bool opened = false;
 try
 {
     while (args[0] == "--once" || Console.ReadLine() == "sample")
     {
-        var report = new Report();
+        var report = new Report { DriverMode = driverSession.Mode };
+        if (driverSession.Problem != null) report.Problems.Add(driverSession.Problem);
         report.DriverInstalled = PawnIo.IsInstalled;
         report.DriverVersion = PawnIo.Version?.ToString();
         using var driver = Native.CreateFile(@"\\?\GLOBALROOT\Device\PawnIO", 0xC0000000, 3,
             IntPtr.Zero, 3, 0, IntPtr.Zero);
         report.DriverAccessible = !driver.IsInvalid;
         report.DriverError = report.DriverAccessible ? 0 : Marshal.GetLastWin32Error();
-        if (!report.DriverInstalled)
-            report.Problems.Add("CPU temperature/power: no existing PawnIO driver is available.");
-        else if (!report.DriverAccessible)
-            report.Problems.Add(report.DriverError == 5
-                ? "CPU sensors: PawnIO access denied. Run mosaic --sensors-admin."
-                : $"CPU sensors: PawnIO cannot be opened (Windows error {report.DriverError}). The existing driver could not provide access.");
+        if (report.DriverAccessible && driverSession.Mode == "portable-session") report.DriverVersion = "2.1.0";
+        if (!report.DriverAccessible && driverSession.Problem == null)
+            report.Problems.Add($"CPU sensor device unavailable (Windows error {report.DriverError}).");
         try
         {
             computer.IsCpuEnabled = report.DriverAccessible;
@@ -77,6 +76,7 @@ class Report
     public bool DriverAccessible { get; set; }
     public string? DriverVersion { get; set; }
     public int DriverError { get; set; }
+    public string DriverMode { get; set; } = "unavailable";
     public List<SensorRow> Sensors { get; } = new();
     public List<string> Problems { get; } = new();
 }

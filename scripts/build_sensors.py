@@ -20,6 +20,7 @@ def build(arch, output):
                     '--self-contained', 'true', '--no-restore', '-o', str(output)], check=True)
     if not (output / 'Mosaic.SensorHelper.exe').is_file() or not (output / 'coreclr.dll').is_file():
         raise RuntimeError('Self-contained helper publication is incomplete')
+    shutil.copytree(ROOT / 'windows/drivers' / arch, output / 'driver', dirs_exist_ok=True)
     licenses = output / 'licenses'
     shutil.copytree(ROOT / 'windows/licenses', licenses, dirs_exist_ok=True)
     shutil.copytree(ROOT / 'windows/sources', licenses / 'sources', dirs_exist_ok=True)
