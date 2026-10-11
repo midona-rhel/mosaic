@@ -77,7 +77,9 @@ func (b *Bridge) run(ctx context.Context) {
 	}
 }
 func (b *Bridge) session(ctx context.Context) error {
-	childCtx, cancel := context.WithCancel(ctx)
+	// Close stdin first on shutdown so the library can stop GPU tracking
+	// and release handles. Cancellation remains a bounded fallback.
+	childCtx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	cmd, err := b.Launch(childCtx)
 	if err != nil {
@@ -96,7 +98,17 @@ func (b *Bridge) session(ctx context.Context) error {
 	if err = cmd.Start(); err != nil {
 		return err
 	}
-	defer func() { cancel(); _ = cmd.Wait() }()
+	defer func() {
+		_ = stdin.Close()
+		exited := make(chan error, 1)
+		go func() { exited <- cmd.Wait() }()
+		select {
+		case <-exited:
+		case <-time.After(time.Second):
+			cancel()
+			<-exited
+		}
+	}()
 	scanner := bufio.NewScanner(stdout)
 	scanner.Buffer(make([]byte, 4096), 2<<20)
 	type response struct {

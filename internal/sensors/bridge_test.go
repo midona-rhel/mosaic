@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -28,6 +29,9 @@ func TestBridgeChild(t *testing.T) {
 			b, _ := json.Marshal(Report{Protocol: 1, At: time.Now(), Sensors: []Sensor{{ID: "cpu", Type: "Temperature"}}})
 			fmt.Println(string(b))
 		}
+	}
+	if marker := os.Getenv("MOSAIC_SENSOR_EXIT_MARKER"); marker != "" {
+		_ = os.WriteFile(marker, []byte("closed"), 0600)
 	}
 	os.Exit(0)
 }
@@ -84,5 +88,26 @@ func TestDecodeRejectsStaleReports(t *testing.T) {
 		if _, err := Decode(data); err == nil {
 			t.Fatal("accepted invalid sample age")
 		}
+	}
+}
+
+func TestBridgeClosesInputBeforeKilling(t *testing.T) {
+	marker := filepath.Join(t.TempDir(), "closed")
+	b := testBridge("good")
+	launch := b.Launch
+	b.Launch = func(ctx context.Context) (*exec.Cmd, error) {
+		cmd, err := launch(ctx)
+		if err == nil {
+			cmd.Env = append(cmd.Env, "MOSAIC_SENSOR_EXIT_MARKER="+marker)
+		}
+		return cmd, err
+	}
+	deadline := time.Now().Add(5 * time.Second)
+	for b.Snapshot().Protocol != 1 && time.Now().Before(deadline) {
+		time.Sleep(10 * time.Millisecond)
+	}
+	b.Close()
+	if _, err := os.Stat(marker); err != nil {
+		t.Fatal("helper did not get a chance to clean up before exit:", err)
 	}
 }

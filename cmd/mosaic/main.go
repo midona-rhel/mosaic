@@ -121,12 +121,16 @@ func run() error {
 			}
 			s = sample()
 		}
+		backend := sensors.Report{}
+		if !*demo && (*gpuDiagnostics || *cpuDiagnostics) {
+			backend = metrics.SensorBackend()
+		}
 		if *gpuDiagnostics {
 			return writeJSON(struct {
 				Build, OS, Architecture string
 				GPU                     metrics.GPUReport
 				SensorBackend           sensors.Report
-			}{version, runtime.GOOS, runtime.GOARCH, s.GPU, metrics.SensorBackend()})
+			}{version, runtime.GOOS, runtime.GOARCH, s.GPU, backend})
 		}
 		if *cpuDiagnostics {
 			modelName, kernel := "", ""
@@ -144,7 +148,7 @@ func run() error {
 				LogicalCPUPercent                      []float64
 				Problems                               map[string]string
 				SensorBackend                          sensors.Report
-			}{version, runtime.GOOS, runtime.GOARCH, modelName, kernel, s.CPUThermal, s.CPUHardware, s.CPUReady, s.CPU, s.Problems, metrics.SensorBackend()})
+			}{version, runtime.GOOS, runtime.GOARCH, modelName, kernel, s.CPUThermal, s.CPUHardware, s.CPUReady, s.CPU, s.Problems, backend})
 		}
 		if *jsonOutput {
 			return writeJSON(s)
