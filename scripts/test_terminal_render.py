@@ -14,7 +14,7 @@ class CellBoundsTest(unittest.TestCase):
     def test_portable_meter_track_and_fill_cover_complete_cells(self):
         binary = pathlib.Path(__file__).resolve().parents[1] / 'bin' / 'mosaic'
         output = subprocess.check_output([str(binary), '--demo', '--snapshot', '--color',
-                                          '--width', '120', '--height', '30'], text=True,
+                                          '--width', '120', '--height', '30'], text=True, encoding="utf-8",
                                          env=dict(os.environ, UNICODE_PROGRESS_BAR='false'))
         screen = TerminalScreen(120, 30)
         pyte.Stream(screen).feed(output.rstrip('\n').replace('\n', '\r\n'))

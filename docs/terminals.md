@@ -5,9 +5,9 @@ The executable is a native Go console application. It does not depend on Bash, M
 | Environment | Behavior / requirement | Verification status |
 | --- | --- | --- |
 | Linux terminal with Bash/zsh/fish | Unicode, VT input/output; detected color profile; keyboard controls | Native Linux + real POSIX PTY checked locally; individual emulator brands not exhaustively tested |
-| macOS Terminal.app, iTerm2, WezTerm, kitty | Same VT UI; font ligatures depend on host configuration | x64/ARM64 cross-builds checked; native CI configured and pending |
-| Windows Terminal with PowerShell 5.1/7 or cmd | Native `.exe`; VT input/output enabled by Bubble Tea; Windows 10 1809+ / Windows 11 targeted | x64/ARM64 cross-builds checked; PowerShell and ConPTY CI configured and pending |
-| Modern Windows console host | Native VT console path; font and mouse presentation may differ | Pending native console validation |
+| macOS Terminal.app, iTerm2, WezTerm, kitty | Same VT UI; font ligatures depend on host configuration | x64/ARM64 builds and native macOS PTY suite passed; individual emulator brands not exhaustively tested |
+| Windows Terminal with PowerShell 5.1/7 or cmd | Native `.exe`; VT input/output enabled by Bubble Tea; Windows 10 1809+ / Windows 11 targeted | x64/ARM64 builds, PowerShell 5.1/7 and native ConPTY suite passed |
+| Modern Windows console host | Native VT console path; font and mouse presentation may differ | Native ConPTY suite passed; classic host UI presentation not independently checked |
 | VS Code integrated terminal | Run executable in Terminal, not an output-only panel | Intended compatibility; native host testing pending |
 | SSH / tmux / screen | Terminal description and mouse/color passthrough must be configured by the host | Keyboard fallback provided; these host combinations not tested locally |
 | PowerShell ISE / legacy or dumb output hosts | Use `--snapshot` / `--json` | Full-screen interactive support not promised |

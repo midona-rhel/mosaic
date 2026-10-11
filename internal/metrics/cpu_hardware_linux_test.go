@@ -4,6 +4,7 @@ package metrics
 
 import (
 	"context"
+	"math"
 	"os"
 	"path/filepath"
 	"testing"
@@ -49,8 +50,20 @@ func TestLinuxRAPLHierarchyAliasesLimitsAndDisappearance(t *testing.T) {
 	write(base+"/energy_uj", "70000000")
 	write(base+"/intel-rapl:0:0/energy_uj", "22000000")
 	r = c.linuxCPUPower(context.Background(), root)
-	if watts := r.PackageWatts(); watts == nil || *watts < 29.9 || *watts > 30.1 {
-		t.Fatalf("wrong package watts: %v", watts)
+	watts := r.PackageWatts()
+	if watts == nil {
+		t.Fatal("package power missing after the second energy sample")
+	}
+	// Fixture writes and runner scheduling add real time to the two-second
+	// baseline. Check the 60-joule delta against the measured interval.
+	var interval time.Duration
+	for _, sensor := range r.Sensors {
+		if sensor.Package {
+			interval = sensor.Interval
+		}
+	}
+	if interval < 2*time.Second || math.Abs(*watts*interval.Seconds()-60) > 1e-9 {
+		t.Fatalf("wrong package power: %g W over %s", *watts, interval)
 	}
 	if len(r.Sensors[0].Limits) != 1 || r.Sensors[0].Limits[0].Watts != 45 || r.Sensors[0].Limits[0].Window != 28*time.Second {
 		t.Fatal("configured limit units incorrect")

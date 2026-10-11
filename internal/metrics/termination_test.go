@@ -3,6 +3,7 @@ package metrics
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -13,13 +14,15 @@ import (
 )
 
 // Only the child test process created below is eligible for this live action.
+const helperNaturalExit = 23
+
 func TestTerminationHelper(t *testing.T) {
 	if os.Getenv("MOSAIC_TERMINATION_HELPER") != "1" {
 		return
 	}
 	fmt.Println("ready")
 	time.Sleep(30 * time.Second)
-	os.Exit(0)
+	os.Exit(helperNaturalExit)
 }
 func TestTerminateOwnedChild(t *testing.T) {
 	cmd := exec.Command(os.Args[0], "-test.run=^TestTerminationHelper$")
@@ -74,7 +77,13 @@ func TestTerminateOwnedChild(t *testing.T) {
 	go func() { done <- cmd.Wait() }()
 	select {
 	case err := <-done:
-		if err == nil {
+		var exitErr *exec.ExitError
+		if err != nil && !errors.As(err, &exitErr) {
+			t.Fatal(err)
+		}
+		// Windows TerminateProcess uses exit code zero; Unix reports a signal.
+		// The helper's own exit code distinguishes both from natural completion.
+		if cmd.ProcessState.ExitCode() == helperNaturalExit {
 			t.Fatal("child exited normally instead of being terminated")
 		}
 	case <-ctx.Done():

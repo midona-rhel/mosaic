@@ -3,7 +3,10 @@
 Used only to capture previews, not to render the application itself.
 """
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, features
+
+# Windows Pillow wheels may omit libraqm; block glyphs still render normally.
+TEXT_FEATURES = {"features": ["calt", "liga"]} if features.check_feature("raqm") else {}
 
 ROOT = Path(__file__).resolve().parents[1]
 BACKGROUND = "#100e19"
@@ -38,7 +41,7 @@ def render_screen(screen, title="Mosaic / Fira Code / demo", cursor=None, click=
     draw.rectangle((0, 0, width, 34), fill="#201b2f")
     for x, fill in [(19, "#ff456d"), (37, "#b45cff"), (55, "#538fff")]:
         draw.ellipse((x-5, 13, x+5, 23), fill=fill)
-    draw.text((width/2, 18), title, font=SMALL, fill="#aaa2bf", anchor="mm", features=["calt", "liga"])
+    draw.text((width/2, 18), title, font=SMALL, fill="#aaa2bf", anchor="mm", **TEXT_FEATURES)
     # Paint all cell backgrounds first; Fira Code's box glyphs can overlap rows.
     for y in range(screen.lines):
         for x in range(screen.columns):
@@ -61,7 +64,7 @@ def render_screen(screen, title="Mosaic / Fira Code / demo", cursor=None, click=
             if text.strip():
                 draw.text((LEFT+start*CELL_W, TOP+y*CELL_H), text,
                           font=BOLD if style[1] else REGULAR, fill=color(style[0], INK),
-                          anchor="ls", features=["calt", "liga"])
+                          anchor="ls", **TEXT_FEATURES)
     if cursor:
         x, y = LEFT+cursor[0]*CELL_W, TOP+cursor[1]*CELL_H-12
         if click:
@@ -71,5 +74,5 @@ def render_screen(screen, title="Mosaic / Fira Code / demo", cursor=None, click=
     if caption:
         draw.rectangle((0,height-40,width,height), fill="#201b2f")
         draw.text((24,height-21), "Recorded input -> " + caption, font=SMALL,
-                  fill="#d3c6ee", anchor="lm", features=["calt", "liga"])
+                  fill="#d3c6ee", anchor="lm", **TEXT_FEATURES)
     return image

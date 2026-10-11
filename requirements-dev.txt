@@ -1,3 +1,4 @@
-# Optional POSIX terminal smoke test; no Python dependency at app runtime.
+# Optional terminal capture and smoke tests; no Python dependency at app runtime.
 pyte==0.8.2
 Pillow==12.3.0
+pywinpty==3.0.5; sys_platform == "win32"

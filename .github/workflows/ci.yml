@@ -56,9 +56,13 @@ jobs:
         timeout-minutes: 3
         run: |
           python -m pip install -r requirements-dev.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/smoke_conpty.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/smoke_collectors.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/test_terminal_render.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
   builds:
     runs-on: ubuntu-latest
     strategy:

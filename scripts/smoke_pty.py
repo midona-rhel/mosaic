@@ -9,6 +9,7 @@ import pty
 import select
 import signal
 import struct
+import sys
 import subprocess
 import termios
 import time
@@ -120,7 +121,13 @@ def run():
         assert b"\x1b[?1049l" in transcript, "alternate screen was not restored"
         assert re.search(rb"\x1b\]11;#100[eE]19(?:\x07|\x1b\\)", transcript), "temporary terminal background was not set"
         assert b"\x1b]111\x07" in transcript or b"\x1b]111\x1b\\" in transcript, "terminal background was not reset"
-        assert termios.tcgetattr(slave) == original, "terminal settings were not restored"
+        restored = termios.tcgetattr(slave)
+        if sys.platform == "darwin":
+            # BSD sets PENDIN when restoring canonical input. It requests a
+            # pending-input redraw; it is not a changed terminal preference.
+            original[3] &= ~termios.PENDIN
+            restored[3] &= ~termios.PENDIN
+        assert restored == original, f"terminal settings were not restored: before={original!r}, after={restored!r}"
         assert transcript.index(b"\x1b[?1049h") < transcript.index(b"\x1b]22;default\x07"), "pointer override leaked into the main screen"
         assert b"\x1b]22;\x07\x1b[?1049l" in transcript, "pointer was not reset before leaving the alternate screen"
         print("PTY smoke passed: keyboard, filter, inspect, cancel, mouse, resize, background and pointer set/reset, cleanup")

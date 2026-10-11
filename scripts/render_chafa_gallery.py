@@ -2,7 +2,7 @@
 """Preview every compact Chafa asset at the terminal capture's actual cell size."""
 import json
 from PIL import Image, ImageDraw
-from terminal_render import ROOT, BACKGROUND, BOLD, SMALL, CELL_W, CELL_H
+from terminal_render import ROOT, BACKGROUND, BOLD, SMALL, CELL_W, CELL_H, TEXT_FEATURES
 
 NAMES = {
     'macos': 'macOS', 'windows_11': 'Windows', 'arch': 'Arch Linux',
@@ -25,5 +25,5 @@ for i, (name, title) in enumerate(NAMES.items()):
     for j, line in enumerate(rows):
         draw.text((left, y+60+j*CELL_H), line, font=BOLD,
                   fill=colors[min(len(colors)-1, j*len(colors)//len(rows))],
-                  anchor='ls', features=['calt', 'liga'])
+                  anchor='ls', **TEXT_FEATURES)
 picture.save(ROOT / 'docs/chafa-logos.png')
