@@ -160,6 +160,11 @@ Before claiming fully validated support, record native results on Windows WDDM A
 
 ## CPU temperature
 
+**Windows v0.1.5 update:** releases now bundle the direct LHM 0.9.6 sensor helper.
+The WMI interface described below remains a legacy fallback. See
+[Windows sensor setup, driver permissions and direct-library sources](windows-sensors.md).
+
+
 Added after the feature-completeness audit identified this missing metric. Readings are not inferred from CPU utilization. `Snapshot.CPUThermal` retains sensor identity, label, provider, value, optional reported critical limit and control-value status. Sampling is cached for five seconds; the timestamp describes Mosaic’s provider query, not an independent guarantee that a driver has refreshed its hardware reading. A failed refresh replaces old readings with an unavailable report.
 
 | Platform | Implementation and inspected reference | Limits |
@@ -184,7 +189,7 @@ Tests cover units, sensor selection, fault flags, device-subdirectory layouts, G
 | Platform | Implemented power source | Availability and semantics |
 | --- | --- | --- |
 | Linux x64/ARM64 | Read-only powercap RAPL `energy_uj` deltas divided by monotonic elapsed time, with class/device aliases deduplicated | Requires a kernel/CPU exposing readable RAPL domains. Package roots contribute to the headline; cores, uncore, DRAM and platform domains are listed separately and never added to packages. ARM devices without RAPL report unavailable. |
-| Windows x64/ARM64 | Existing Libre Hardware Monitor / Open Hardware Monitor WMI CPU `Power` sensors | Same bounded, two-second native WMI query as CPU temperatures, refreshed every five seconds. Requires a compatible running provider and driver; ARM64 support is provider-dependent. Package sensors are distinct from cores, graphics, memory and platform power. No install, elevation or driver loading. |
+| Windows x64/ARM64 | Bundled LHM 0.9.6 CPU `Power` sensors; existing LHM/OHM WMI fallback | Same bounded, two-second native WMI query as CPU temperatures, refreshed every five seconds. Direct helper requires PawnIO and administrator access; explicit setup/launch flags are documented in windows-sensors.md. ARM64 support is provider-dependent. Package sensors are distinct from cores, graphics, memory and platform power. |
 | Intel / Apple Silicon macOS | Native, read-only AppleSMC package keys `PCPC`, `PCPT`, `PCPR`, in that priority order | Alternative keys, never summed. The reader uses IOKit via purego and does not need CGO or launch sudo. Recognized keys depend on Mac model/macOS version; many Apple Silicon configurations may return unavailable. This is not an IOReport/powermetrics backend. |
 
 Linux power samples are interval averages, not instantaneous measurements. The first sample, counter decrease (wrap or reset), changed counter range, and recovery after a failed read all rebaseline rather than fabricate spikes. Missing devices discard their baselines. Incomplete package readings never become a partial total. `constraint_*_power_limit_uw` and `constraint_*_time_window_us` are shown as **configured limits**, with their names and windows, never as actual consumption or rated TDP. This code never writes to powercap.

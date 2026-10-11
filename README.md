@@ -46,13 +46,18 @@ The optional `scripts/build.ps1` builds the same binary without Make or Bash. Ru
 
 ## Windows hardware sensors
 
-CPU utilization works without a helper. CPU temperature and package power need
-an accessible hardware sensor driver; Windows does not expose these through its
-standard CPU-load counters. Mosaic reads a running, WMI-capable
-[Libre Hardware Monitor](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor)
-or Open Hardware Monitor instance. Enable CPU monitoring and confirm the readings
-there first. GPU usage and memory use Windows WDDM counters and DXGI; optional
-GPU temperature/power depend on the available driver provider.
+Windows releases include a self-contained sensor helper; keep the `sensors`
+folder beside `mosaic.exe`. No separate .NET runtime or hardware monitor is needed.
+
+```powershell
+.\mosaic.exe --setup-sensors   # one-time driver download/install; Windows UAC
+.\mosaic.exe --sensors-admin   # launch full sensor monitoring; Windows UAC
+```
+
+PawnIO requires administrator access when reading CPU temperature and power.
+Normal `mosaic.exe` launches remain available without elevation. The helper also
+reads supported GPU usage, memory, temperatures and power. See
+[Windows sensor setup and diagnostics](docs/windows-sensors.md).
 
 ## Terminals and fallback controls
 
@@ -83,7 +88,7 @@ On Windows, use Windows 10 1809 or later / Windows 11; the native console smoke 
 | Thermals (optional) | CPU/GPU temperatures and fan RPM | Identified sensor sources, control-sensor labels, fan readings |
 | Connections (optional) | Accessible sockets, listener count, process names and local ports | PID, TCP/UDP state, numeric local/remote endpoints and visibility limits |
 
-CPU watts are measured or derived from hardware energy counters, never estimated from utilization. Linux uses powercap/RAPL; Windows uses an existing compatible hardware-monitor WMI provider; macOS reads AppleSMC package keys with an Apple Silicon IOReport fallback, including mapped AppleCLPC counters on macOS 27. Availability depends on hardware, drivers, permissions and model/OS support. Missing readings say **Unavailable**. See the [platform sources and limitations](docs/telemetry.md#cpu-power-clocks-and-processor-details).
+CPU watts are measured or derived from hardware energy counters, never estimated from utilization. Linux uses powercap/RAPL; Windows uses the bundled Libre Hardware Monitor library helper (legacy WMI fallback); macOS reads AppleSMC package keys with an Apple Silicon IOReport fallback, including mapped AppleCLPC counters on macOS 27. Availability depends on hardware, drivers, permissions and model/OS support. Missing readings say **Unavailable**. See the [platform sources and limitations](docs/telemetry.md#cpu-power-clocks-and-processor-details).
 
 Snapshots default to **120×30**; the interactive app follows the actual terminal dimensions. CPU temperature and watts also remain visible at 80×24, where the smallest CPU card omits its graph to fit both.
 
@@ -137,7 +142,7 @@ The CPU card and its expanded/pop-out view show temperature in °C, including in
 
 - **Linux:** kernel hwmon CPU drivers (Intel coretemp, AMD k10temp/k8temp/zenpower), with explicitly named CPU thermal zones as fallback. Requires the driver to expose readable sensors.
 - **macOS:** the pinned gopsutil AppleSMC backend for Intel CPU diode readings and IOHID CPU sensor readings on Apple Silicon. Availability depends on hardware, macOS and permissions.
-- **Windows:** read-only queries to an already-running **WMI-capable Libre Hardware Monitor or Open Hardware Monitor** provider with CPU sensors enabled. Mosaic does not install a kernel driver or elevate privileges. Generic ACPI thermal zones are excluded because they do not reliably identify CPU die temperature.
+- **Windows:** the bundled Libre Hardware Monitor library helper reads CPU sensors using PawnIO. Explicit `--setup-sensors` installs the driver and `--sensors-admin` launches with required elevation. Legacy WMI providers remain a fallback. See [setup](docs/windows-sensors.md).
 
 No reading is displayed as **Unavailable**, with the reason in CPU details. Demo readings remain labeled demo. Windows/macOS temperature providers have cross-build and parser coverage; native hardware validation remains pending. See the [source audit](docs/telemetry.md#cpu-temperature).
 

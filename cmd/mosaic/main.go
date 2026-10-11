@@ -17,6 +17,7 @@ import (
 	"github.com/charmbracelet/colorprofile"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/midona-rhel/mosaic/internal/metrics"
+	"github.com/midona-rhel/mosaic/internal/sensors"
 	"github.com/midona-rhel/mosaic/internal/ui"
 )
 
@@ -38,6 +39,8 @@ func run() error {
 	meters := flag.String("meters", "", "Use and remember fira or portable meters (default: environment, saved preference, then portable)")
 	readOnly := flag.Bool("read-only", false, "Disable process termination")
 	snapshot := flag.Bool("snapshot", false, "Print one dashboard and exit")
+	setupSensors := flag.Bool("setup-sensors", false, "Install or repair the Windows sensor driver (explicit UAC setup)")
+	sensorsAdmin := flag.Bool("sensors-admin", false, "Launch Mosaic with Windows administrator sensor access")
 	cpuDiagnostics := flag.Bool("cpu-diagnostics", false, "Print CPU-only sensor diagnostics as JSON and exit")
 	gpuDiagnostics := flag.Bool("gpu-diagnostics", false, "Print GPU counters and temperature sources as JSON and exit")
 	jsonOutput := flag.Bool("json", false, "Print one metrics snapshot as JSON and exit")
@@ -88,6 +91,19 @@ func run() error {
 	}
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
+	defer metrics.CloseSensors()
+	if *setupSensors {
+		if modes > 0 || *sensorsAdmin || *demo {
+			return fmt.Errorf("use --setup-sensors by itself")
+		}
+		return metrics.SetupSensors(ctx)
+	}
+	if *sensorsAdmin {
+		launched, err := metrics.ElevateSensors()
+		if err != nil || launched {
+			return err
+		}
+	}
 	model := ui.New(ctx, ui.Options{Interval: *interval, Demo: *demo, NoMouse: *noMouse, ReadOnly: *readOnly, NoTerminalEffects: *noTerminalEffects, ASCIIArt: *asciiLogos})
 	if err := model.OpenPanel(*panel); err != nil {
 		return err
@@ -96,6 +112,9 @@ func run() error {
 		s := metrics.Demo()
 		if !*demo {
 			c := metrics.NewCollector()
+			if *cpuDiagnostics || *gpuDiagnostics {
+				metrics.WaitSensors(ctx)
+			}
 			sample := func() metrics.Snapshot {
 				sampleCtx, stop := context.WithTimeout(ctx, 5*time.Second)
 				defer stop()
@@ -113,7 +132,8 @@ func run() error {
 			return writeJSON(struct {
 				Build, OS, Architecture string
 				GPU                     metrics.GPUReport
-			}{version, runtime.GOOS, runtime.GOARCH, s.GPU})
+				SensorBackend           sensors.Report
+			}{version, runtime.GOOS, runtime.GOARCH, s.GPU, metrics.SensorBackend()})
 		}
 		if *cpuDiagnostics {
 			modelName, kernel := "", ""
@@ -130,7 +150,8 @@ func run() error {
 				CPUReady                               bool
 				LogicalCPUPercent                      []float64
 				Problems                               map[string]string
-			}{version, runtime.GOOS, runtime.GOARCH, modelName, kernel, s.CPUThermal, s.CPUHardware, s.CPUReady, s.CPU, s.Problems})
+				SensorBackend                          sensors.Report
+			}{version, runtime.GOOS, runtime.GOARCH, modelName, kernel, s.CPUThermal, s.CPUHardware, s.CPUReady, s.CPU, s.Problems, metrics.SensorBackend()})
 		}
 		if *jsonOutput {
 			return writeJSON(s)

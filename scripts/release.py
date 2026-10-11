@@ -55,6 +55,15 @@ These binaries are unsigned. macOS binaries are not notarized.
             output.write(ROOT / name, name)
         for source, destination in LICENSES.items():
             output.write(ROOT / source, destination)
+        if system == 'windows':
+            helper = ROOT / 'dist' / f'sensors-{arch}'
+            if not (helper / 'Mosaic.SensorHelper.exe').is_file():
+                raise RuntimeError('Build the bundled sensor helper before packaging')
+            for path in sorted(helper.rglob('*')):
+                if path.is_file():
+                    output.write(path, 'sensors/' + path.relative_to(helper).as_posix())
+            output.write(ROOT / 'docs/windows-sensors.md', 'docs/windows-sensors.md')
+            instructions += "\nCPU sensors: run .\\mosaic.exe --setup-sensors once (downloads the verified driver installer).\nThen run .\\mosaic.exe --sensors-admin for full sensor access. Both use Windows UAC.\nKeep the sensors folder next to mosaic.exe; no separate .NET installation is needed.\n"
         output.writestr('RUN.txt', instructions)
     with zipfile.ZipFile(archive) as output:
         if output.testzip() is not None or output.read(executable) != binary.read_bytes():
@@ -71,6 +80,9 @@ def main():
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*', args.version):
         parser.error('version must contain only letters, digits, dots, underscores, and hyphens')
     (ROOT / 'dist').mkdir(exist_ok=True)
+    from build_sensors import build
+    for arch in ('amd64', 'arm64'):
+        build(arch, ROOT / 'dist' / f'sensors-{arch}')
     with ThreadPoolExecutor(max_workers=3) as executor:
         checksums = list(executor.map(lambda target: package(args.version, target), TARGETS))
     (ROOT / 'dist' / f'SHA256SUMS-{args.version}.txt').write_text('\n'.join(checksums) + '\n')

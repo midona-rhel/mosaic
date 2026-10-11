@@ -27,8 +27,8 @@ func parseWindowsCPUHardware(data []byte) (CPUHardware, error) {
 		seen[s.ID] = true
 		switch s.Type {
 		case "Power":
-			// LHM/OHM publish a missing float as zero. A WMI zero is therefore
-			// ambiguous; preserve it as unavailable instead of claiming 0 W.
+			// Legacy WMI and failed register reads can produce zero. CPU
+			// package zero is ambiguous; keep it unavailable.
 			var watts *float64
 			if s.Value != nil && validPower(*s.Value) && *s.Value > 0 {
 				watts = s.Value
@@ -48,7 +48,7 @@ func parseWindowsCPUHardware(data []byte) (CPUHardware, error) {
 	if len(r.Power.Sensors) > 0 {
 		r.Power.Problems = nil
 	} else {
-		r.Power.Problems = append(r.Power.Problems, "No CPU Power sensors returned. Run a WMI-capable Libre Hardware Monitor or Open Hardware Monitor build with CPU sensors enabled.")
+		r.Power.Problems = append(r.Power.Problems, "No CPU Power sensors returned. On Windows use --setup-sensors, then --sensors-admin.")
 	}
 	return r, nil
 }

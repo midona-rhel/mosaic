@@ -6,3 +6,6 @@ coverage.out
 .venv/
 __pycache__/
 /screenshots/
+
+/windows/SensorHelper/bin/
+/windows/SensorHelper/obj/

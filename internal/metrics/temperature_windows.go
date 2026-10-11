@@ -19,10 +19,25 @@ type windowsSensorRow struct {
 }
 
 func windowsCPUSensors(ctx context.Context) ([]byte, error) {
+	helper := sensorHelper.Snapshot()
+	cpu := helper
+	cpu.Sensors = nil
+	usable := false
+	for _, sensor := range helper.Sensors {
+		if sensor.HardwareType == "Cpu" {
+			cpu.Sensors = append(cpu.Sensors, sensor)
+			if sensor.Value != nil && (sensor.Type == "Temperature" || sensor.Type == "Power") {
+				usable = true
+			}
+		}
+	}
+	if usable {
+		return json.Marshal(cpu)
+	}
 	report := struct {
 		Sensors  []windowsSensorRow
 		Problems []string
-	}{}
+	}{Problems: helper.Problems}
 	for _, ns := range []string{"root/LibreHardwareMonitor", "root/OpenHardwareMonitor"} {
 		hardware, err := querySensors[windowsHardware](ctx, ns, "SELECT Identifier,Name FROM Hardware WHERE HardwareType='Cpu'")
 		if err != nil {
@@ -49,7 +64,7 @@ func windowsCPUSensors(ctx context.Context) ([]byte, error) {
 }
 
 func (c *Collector) platformCPUThermal(ctx context.Context) CPUThermalReport {
-	c.hardware = CPUHardware{Power: CPUPowerReport{At: time.Now(), Problems: []string{"CPU power requires an accessible WMI hardware-monitor provider with CPU Power sensors enabled."}}}
+	c.hardware = CPUHardware{Power: CPUPowerReport{At: time.Now(), Problems: []string{"CPU power requires the bundled sensor helper and accessible PawnIO driver."}}}
 	data, err := windowsCPUSensors(ctx)
 	if err != nil {
 		return CPUThermalReport{Problems: []string{"CPU sensor provider: " + err.Error()}}
@@ -64,7 +79,7 @@ func (c *Collector) platformCPUThermal(ctx context.Context) CPUThermalReport {
 		return CPUThermalReport{Problems: []string{err.Error()}}
 	}
 	if len(r.Sensors) == 0 {
-		r.Problems = append(r.Problems, "Run a WMI-capable Libre Hardware Monitor or Open Hardware Monitor build with CPU sensors enabled. Windows ACPI thermal zones are not treated as CPU die temperature.")
+		r.Problems = append(r.Problems, "CPU sensors need the bundled helper, PawnIO driver and administrator access. Use --setup-sensors, then --sensors-admin.")
 	}
 	return r
 }
