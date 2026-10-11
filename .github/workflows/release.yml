@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Existing release tag (for example, v0.1.0)
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VERSION: ${{ inputs.version }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.version }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Test release source
+        run: |
+          go test -race ./...
+          go vet ./...
+      - name: Build and verify archives
+        run: python3 scripts/release.py --version "$VERSION"
+      - name: Upload archives and checksums
+        run: |
+          gh release view "$VERSION" >/dev/null
+          gh release upload "$VERSION" dist/*-"$VERSION".zip "dist/SHA256SUMS-$VERSION.txt" --clobber
