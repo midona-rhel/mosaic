@@ -68,8 +68,8 @@ carry Microsoft hardware signatures; exact SHA-256 hashes are checked before
 loading. The image is copied into a fresh directory accessible only to
 administrators and SYSTEM. WinRing0 is not used.
 
-Normal EOF shutdown closes the collector process before unloading. Another active reader
-can keep the driver in use; Mosaic does not force unloading. If the helper is
+Normal EOF shutdown closes the collector process before unloading. Active Mosaic readers hold process-scoped leases; only the last one requests
+unloading. Pre-existing third-party drivers are never unloaded by Mosaic. If the helper is
 forcibly killed, its demand-start service may remain until a subsequent Mosaic
 session cleans it up or Windows restarts (restarting unloads the driver but can
 leave metadata/files for the next session to remove).

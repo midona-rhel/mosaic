@@ -16,6 +16,7 @@ sealed class DriverSession : IDisposable
     string? ownedPath;
     bool disposed;
     SafeFileHandle? devicePin;
+    FileStream? readerLease;
 
     public static SafeFileHandle OpenDevice() => Native.CreateFile(Device, 0xC0000000, 3, IntPtr.Zero, 3, 0, IntPtr.Zero);
 
@@ -59,6 +60,7 @@ sealed class DriverSession : IDisposable
             {
                 ownedPath = path;
                 Mode = "portable-session";
+                AddReaderLease();
             }
             return;
         }
@@ -100,6 +102,7 @@ sealed class DriverSession : IDisposable
                 throw error;
             }
             Mode = "portable-session";
+            AddReaderLease();
         }
         catch
         {
@@ -107,6 +110,30 @@ sealed class DriverSession : IDisposable
             ownedPath = null;
             throw;
         }
+    }
+
+    void AddReaderLease()
+    {
+        string path = Path.Combine(Path.GetDirectoryName(ownedPath!)!, $"reader-{Environment.ProcessId}-{Guid.NewGuid():N}.lease");
+        readerLease = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite,
+            FileShare.None, 1, FileOptions.DeleteOnClose);
+    }
+
+    static bool HasOtherReaders(string driverPath)
+    {
+        foreach (string path in Directory.EnumerateFiles(Path.GetDirectoryName(driverPath)!, "reader-*.lease"))
+        {
+            try
+            {
+                // Active leases are held without sharing. DeleteOnClose also
+                // releases leases if their process is terminated unexpectedly.
+                using var stale = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None, 1, FileOptions.DeleteOnClose);
+            }
+            catch (FileNotFoundException) { }
+            catch (IOException) { return true; }
+            catch (UnauthorizedAccessException) { return true; }
+        }
+        return false;
     }
 
     static void Verify(byte[] bytes)
@@ -184,12 +211,14 @@ sealed class DriverSession : IDisposable
         try
         {
             using var gate = Lock();
+            readerLease?.Dispose();
+            if (HasOtherReaders(ownedPath)) return;
             using var scm = Native.OpenSCManager(null, null, 1);
             Check(scm);
             using var service = Native.OpenService(scm, ServiceName, 0x10025);
             if (service.IsInvalid || !IsOurs(service, out var path) || path != ownedPath) return;
-            // Windows refuses unload while another client holds the device. That
-            // client will retry cleanup at its own exit; never force an unload.
+            // Only the last Mosaic lease may request unload. Open kernel handles
+            // alone do not prevent a stop request from marking the device deleted.
             if (!Native.ControlService(service, 1, out _) && Marshal.GetLastWin32Error() != 1062)
             {
                 Console.Error.WriteLine($"Sensor session remains in use (Windows error {Marshal.GetLastWin32Error()}).");
@@ -205,6 +234,7 @@ sealed class DriverSession : IDisposable
             if (Native.DeleteService(service)) DeleteFiles(path);
         }
         catch (Exception e) { Console.Error.WriteLine("Sensor session cleanup: " + e.Message); }
+        finally { readerLease?.Dispose(); }
     }
 
     [StructLayout(LayoutKind.Sequential)] struct SecurityAttributes { public int Length; public IntPtr Descriptor; public int Inherit; }

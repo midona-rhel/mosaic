@@ -55,7 +55,8 @@ func WaitSensors(ctx context.Context) {
 	}
 }
 
-// Elevation is an explicit launch option, never a side effect of collecting data.
+// The Windows live UI requests elevation before collection; diagnostics can
+// opt in explicitly. Already-elevated launches keep their current terminal.
 func ElevateSensors() (bool, error) {
 	if windows.GetCurrentProcessToken().IsElevated() {
 		return false, nil
