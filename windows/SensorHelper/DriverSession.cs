@@ -15,13 +15,18 @@ sealed class DriverSession : IDisposable
     public int Error { get; private set; }
     string? ownedPath;
     bool disposed;
+    SafeFileHandle? devicePin;
 
     public static SafeFileHandle OpenDevice() => Native.CreateFile(Device, 0xC0000000, 3, IntPtr.Zero, 3, 0, IntPtr.Zero);
 
     public static DriverSession Open()
     {
         var session = new DriverSession();
-        try { session.Acquire(); }
+        try
+        {
+            session.Acquire();
+            if (session.Mode != "unavailable") session.devicePin = OpenDevice();
+        }
         catch (Exception e)
         {
             session.Error = e is Win32Exception w ? w.NativeErrorCode : -1;
@@ -172,8 +177,10 @@ sealed class DriverSession : IDisposable
 
     public void Dispose()
     {
-        if (disposed || ownedPath == null) return;
+        if (disposed) return;
         disposed = true;
+        devicePin?.Dispose();
+        if (ownedPath == null) return;
         try
         {
             using var gate = Lock();
@@ -183,8 +190,18 @@ sealed class DriverSession : IDisposable
             if (service.IsInvalid || !IsOurs(service, out var path) || path != ownedPath) return;
             // Windows refuses unload while another client holds the device. That
             // client will retry cleanup at its own exit; never force an unload.
-            if (!Native.ControlService(service, 1, out _) && Marshal.GetLastWin32Error() != 1062) return;
-            if (!Native.QueryServiceStatus(service, out var status) || status.State != 1) return;
+            if (!Native.ControlService(service, 1, out _) && Marshal.GetLastWin32Error() != 1062)
+            {
+                Console.Error.WriteLine($"Sensor session remains in use (Windows error {Marshal.GetLastWin32Error()}).");
+                return;
+            }
+            for (int i = 0; i < 20; i++)
+            {
+                if (!Native.QueryServiceStatus(service, out var status)) return;
+                if (status.State == 1) break;
+                if (i == 19) return;
+                Thread.Sleep(50);
+            }
             if (Native.DeleteService(service)) DeleteFiles(path);
         }
         catch (Exception e) { Console.Error.WriteLine("Sensor session cleanup: " + e.Message); }

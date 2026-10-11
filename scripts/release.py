@@ -56,7 +56,6 @@ These binaries are unsigned. macOS binaries are not notarized.
         for source, destination in LICENSES.items():
             output.write(ROOT / source, destination)
         if system == 'windows':
-            output.writestr('Mosaic.cmd', '@echo off\r\n"%~dp0mosaic.exe" --sensors-admin %*\r\nif errorlevel 1 pause\r\n')
             helper = ROOT / 'dist' / f'sensors-{arch}'
             if not (helper / 'Mosaic.SensorHelper.exe').is_file():
                 raise RuntimeError('Build the bundled sensor helper before packaging')
@@ -64,7 +63,7 @@ These binaries are unsigned. macOS binaries are not notarized.
                 if path.is_file():
                     output.write(path, 'sensors/' + path.relative_to(helper).as_posix())
             output.write(ROOT / 'docs/windows-sensors.md', 'docs/windows-sensors.md')
-            instructions += "\nKeep the sensors folder next to mosaic.exe. Its runtime is included.\nFor CPU temperature/power, run Mosaic.cmd (or mosaic.exe --sensors-admin) and approve UAC.\nThe signed session driver is bundled; no separate installation is needed.\n"
+            instructions += "\nKeep the sensors folder next to mosaic.exe. Its runtime is included.\nRun mosaic.exe and approve Windows elevation for hardware sensors.\nThe signed session driver is bundled; no separate installation is needed.\n"
         output.writestr('RUN.txt', instructions)
     with zipfile.ZipFile(archive) as output:
         if output.testzip() is not None or output.read(executable) != binary.read_bytes():

@@ -306,7 +306,7 @@ compact card shows remaining/full; the design ratio remains in details.
 CPU load uses Windows processor time counters. CPU die temperature and package
 power use the bundled LHM 0.9.6 sensor helper with a bundled signed session driver and
 administrator access. No separate installer or preinstalled driver is needed;
-`--sensors-admin` requests elevation and the helper uses a temporary demand-start service;
+the live app requests elevation automatically and the helper uses a temporary demand-start service;
 see [setup and diagnostics](windows-sensors.md). Older WMI providers remain a
 fallback. Real 5800X3D readings still require hardware verification.
 

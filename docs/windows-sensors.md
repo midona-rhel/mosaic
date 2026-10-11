@@ -6,12 +6,13 @@ Extract the **whole Windows ZIP**, keeping `sensors` beside `mosaic.exe`, and ru
 .\mosaic.exe
 ```
 
-For CPU temperature and power, open **Mosaic.cmd** and approve Windows elevation.
-From an existing terminal, the equivalent command is:
+The live Windows app requests administrator access automatically. Approve the
+Windows UAC prompt to enable CPU temperature and power. There is one entry point:
+`mosaic.exe`. When started from an elevated terminal it stays in that terminal.
 
-```powershell
-.\mosaic.exe --sensors-admin
-```
+For JSON/diagnostic commands, use an elevated terminal so their output stays
+available to the calling shell. `--sensors-admin` remains a compatibility option
+for explicitly requesting elevation. Demo/help/version commands do not elevate.
 
 The helper, .NET runtime and signed sensor driver are included. No separate
 installer, download or hardware-monitor application is needed. GPU driver APIs
@@ -24,8 +25,10 @@ Driver Store package or boot-start service. The last Mosaic reader normally
 stops the driver and removes its service and private image on exit. Existing
 third-party PawnIO services are borrowed and never changed or stopped.
 
-The helper uses unmodified **LibreHardwareMonitorLib 0.9.6**, sampling in a separate
-process every five seconds. It stays running between samples and communicates
+The helper uses unmodified **LibreHardwareMonitorLib 0.9.6**, sampling every five
+seconds in a collector child process. A host holds the driver session until the
+collector exits, so native handles are released before unloading. Both stay
+running between samples and communicate
 through private stdin/stdout pipes. A slow or failed helper cannot stall the UI.
 Missing, stale and failed readings remain unavailable. The helper never sets fan
 controls, voltages or clock values.
@@ -65,7 +68,7 @@ carry Microsoft hardware signatures; exact SHA-256 hashes are checked before
 loading. The image is copied into a fresh directory accessible only to
 administrators and SYSTEM. WinRing0 is not used.
 
-Normal EOF shutdown releases the library before unloading. Another active reader
+Normal EOF shutdown closes the collector process before unloading. Another active reader
 can keep the driver in use; Mosaic does not force unloading. If the helper is
 forcibly killed, its demand-start service may remain until a subsequent Mosaic
 session cleans it up or Windows restarts (restarting unloads the driver but can

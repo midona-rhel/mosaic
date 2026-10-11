@@ -33,6 +33,8 @@ class Session:
     def close(self):
         self.proc.stdin.close()
         assert self.proc.wait(timeout=10) == 0, self.proc.stderr.read()
+        errors = self.proc.stderr.read()
+        if errors: print(errors, flush=True)
     def kill(self):
         if self.proc.poll() is None:
             self.proc.kill()

@@ -5,12 +5,15 @@ using LibreHardwareMonitor.Hardware;
 using LibreHardwareMonitor.PawnIo;
 using Microsoft.Win32.SafeHandles;
 
-// A private stdin/stdout protocol. No listening socket, service or sensor writes.
+// A private stdin/stdout protocol. No listening socket or sensor writes.
 Console.OutputEncoding = new UTF8Encoding(false);
+bool collect = args.Length == 2 && args[0] == "--collect";
+if (collect) args = args[1..];
 if (!args.SequenceEqual(new[] { "--stdio" }) && !args.SequenceEqual(new[] { "--once" }))
 { Console.Error.WriteLine("Use --stdio or --once."); return 2; }
 
 using var driverSession = DriverSession.Open();
+if (!collect) return await SensorHost.Run(args);
 var computer = new Computer { IsCpuEnabled = true, IsGpuEnabled = true };
 bool opened = false;
 try
